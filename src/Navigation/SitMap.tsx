@@ -15,7 +15,7 @@ export const SitMap = () => {
     <div>
       <Routes>
         <Route
-          path="/dashboard"
+          path="/"
           element={
             <AppLayout>
               <AppContent />
@@ -23,7 +23,7 @@ export const SitMap = () => {
           }
         />
         <Route
-          path="/dashboard/add-employee"
+          path="/add-employee"
           element={
             <AppLayout>
               <AddUser/>

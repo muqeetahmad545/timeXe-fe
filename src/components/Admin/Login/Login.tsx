@@ -23,7 +23,7 @@ export const Login = () => {
         navigate("/dashboard");
       } 
       else {
-        navigate("/employee/dashboard");
+        navigate("/employee");
       }
     } catch (error) {
       console.error("Login error:", error);

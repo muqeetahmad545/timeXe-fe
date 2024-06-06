@@ -130,17 +130,6 @@ export const Employees: React.FC = () => {
   const [searchName, setSearchName] = useState<string>(""); 
 
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const fetchUsersData = async () => {
-  //     const usersData = await fetchUsers();
-  //     setUsers(usersData);
-  //     finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchUsersData();
-  // }, []);
   useEffect(() => {
     const fetchUsersData = async () => {
       try {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { AppHeader } from "../components/Admin/Dashboard/AppHeader";
 import { adminSidebar, employeeSidebar } from "./sidebar";
 import { fetchUserData } from "../services/userApis/userApis";
@@ -63,7 +63,14 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
               key: menuitem.key,
               icon: <menuitem.icon />,
               label: menuitem.label,
-              onClick: () => navigate(menuitem.path),
+              onClick: () =>{
+                navigate(menuitem.path)
+                if (menuitem.label === 'Logout') {
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("firstName");
+                  localStorage.clear()
+                }
+              },
             }))}
           />
         </Sider>
@@ -76,7 +83,7 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
               borderRadius: borderRadiusLG,
             }}
           >
-            {children}
+        <Outlet/>
           </Content>
         </Layout>
       </Layout>

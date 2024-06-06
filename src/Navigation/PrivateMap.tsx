@@ -18,7 +18,7 @@ export const AdminRoutes = ({ children, userRole }: RoutesProps) => {
   return userRole === "admin" ? (
     <>{children}</>
   ) : (
-    <Navigate to="/employee/dashboard" />
+    <Navigate to="/employee" />
   );
 };
 

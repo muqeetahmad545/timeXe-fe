@@ -12,19 +12,19 @@ export const employeeSidebar = [
     key: "1",
     icon: UserOutlined,
     label: "Dashboard",
-    path: "/employee/dashboard",
+    path: "/employee",
   },
   {
     key: "2",
     icon: VideoCameraOutlined,
     label: "Profile",
-    path: "/employee/profile",
+    path: "profile",
   },
   {
     key: "3",
     icon: UploadOutlined,
     label: "Leave Applications",
-    path: "/employee/leave-applications",
+    path: "leave-applications",
   },
    {
     key: "4",
@@ -32,7 +32,10 @@ export const employeeSidebar = [
     label: "Logout",
     path: "/",
     onClick: () => {
-      localStorage.clear();}
+
+ 
+    
+    }
   },
 ];
 
@@ -47,25 +50,25 @@ export const adminSidebar = [
       key: "2",
       icon: VideoCameraOutlined,
       label: "Add Employee",
-      path: "/dashboard/add-employee",
+      path: "add-employee",
     },
     {
       key: "3",
       icon: UsergroupAddOutlined,
       label: "Employees",
-      path: "/dashboard/employees",
+      path: "employees",
     },
     {
       key: "4",
       icon: CalendarOutlined,
       label: "Attendence Report",
-      path: "/dashboard/attendence-report",
+      path: "attendence-report",
     },
     {
       key: "5",
       icon: UploadOutlined,
       label: "Leave Applications",
-      path: "/dashboard/leave-applications",
+      path: "leave-applications",
     },  
     {
       key: "6",
@@ -73,6 +76,6 @@ export const adminSidebar = [
       label: "Logout",
       path: "/",
       onClick: () => {
-        localStorage.clear();}
+  }
       },
   ]

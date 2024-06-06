@@ -13,7 +13,7 @@ export const UserRoutes = () => {
     <div>
       <Routes>
         <Route
-          path="/employee/dashboard"
+          path="/"
           element={
             <AppLayout>
               <DashContent />

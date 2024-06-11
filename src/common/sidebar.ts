@@ -1,22 +1,25 @@
 import {
   UserOutlined,
+  DashboardOutlined,
   VideoCameraOutlined,
   UploadOutlined,
   LogoutOutlined,
   UsergroupAddOutlined,
-  CalendarOutlined
+  CalendarOutlined,
+  FieldTimeOutlined,
+  UserSwitchOutlined
 } from "@ant-design/icons";
 
 export const employeeSidebar = [
   {
     key: "1",
-    icon: UserOutlined,
+    icon: DashboardOutlined,
     label: "Dashboard",
     path: "/employee",
   },
   {
     key: "2",
-    icon: VideoCameraOutlined,
+    icon: UserOutlined,
     label: "Profile",
     path: "profile",
   },
@@ -32,9 +35,6 @@ export const employeeSidebar = [
     label: "Logout",
     path: "/",
     onClick: () => {
-
- 
-    
     }
   },
 ];
@@ -42,19 +42,19 @@ export const employeeSidebar = [
 export const adminSidebar = [
     {
       key: "1",
-      icon: UserOutlined,
+      icon: DashboardOutlined,
       label: "Dashboard",
       path: "/dashboard",
     },
     {
       key: "2",
-      icon: VideoCameraOutlined,
+      icon: UsergroupAddOutlined,
       label: "Add Employee",
       path: "add-employee",
     },
     {
       key: "3",
-      icon: UsergroupAddOutlined,
+      icon: UserSwitchOutlined,
       label: "Employees",
       path: "employees",
     },
@@ -63,15 +63,27 @@ export const adminSidebar = [
       icon: CalendarOutlined,
       label: "Attendence Report",
       path: "attendence-report",
-    },
+    },  
     {
       key: "5",
+      icon: FieldTimeOutlined,
+      label: "Daily Report",
+      path: "daily-report",
+    },
+    {
+      key: "6",
+      icon: UserOutlined,
+      label: "User Report",
+      path: "user-report",
+    }, 
+    {
+      key: "7",
       icon: UploadOutlined,
       label: "Leave Applications",
       path: "leave-applications",
-    },  
+    },    
     {
-      key: "6",
+      key: "8",
       icon: LogoutOutlined,
       label: "Logout",
       path: "/",

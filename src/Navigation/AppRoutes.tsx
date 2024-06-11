@@ -15,53 +15,15 @@ import { AddUser } from "../components/Admin/User/AddUser";
 import { Employees } from "../components/Admin/User/Employeees";
 import { AttendanceHistory } from "../components/Admin/Attendance/AttendanceHistory";
 import { LeaAppAdmin } from "../components/Employees/Leave/LeaAppAdmin";
+import { DailyAttendanceHistory } from "../components/Admin/Attendance/DailyAttendanceHistory";
+import { UserReport } from "../components/Admin/Attendance/UserReport";
 export const AppRoutes = () => {
   return (
     <div>
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
-          {/* <Route
-            path="/employee/dashboard"
-            element={
-              <PrivateMap>
-                 <UserRoutes /> 
-              </PrivateMap>
-            }
-          >
-
-<Routes>
-        <Route
-          path="/"
-          element={
-            <AppLayout>
-              <DashContent />
-            </AppLayout>
-          }
-        />
-        <Route
-          path="/employee/profile"
-          element={
-            <AppLayout>
-              <Profile />
-            </AppLayout>
-          }
-        />
-        <Route
-          path="/employee/leave-applications"
-          element={
-            <AppLayout>
-              <LeaApp />
-            </AppLayout>
-          }
-        />
-        <Route path="*" element={<Navigate to="/employee/dashboard" />} />
-      </Routes>
-            
-            
-            </Route>  */}
-
-<Route path="/employee" element={<AppLayout />}>
+        <Route path="/employee" element={<AppLayout />}>
           <Route index element={<DashContent />} />
           <Route path="profile" element={<Profile />} />
           <Route path="leave-applications" element={<LeaApp />} />
@@ -74,7 +36,9 @@ export const AppRoutes = () => {
           <Route path="edit-employee/:userId" element={<AddUser />} />
           <Route path="employees" element={<Employees />} />
           <Route path="attendence-report" element={<AttendanceHistory />} />
+          <Route path="daily-report" element={<DailyAttendanceHistory />} />
           <Route path="leave-applications" element={<LeaAppAdmin />} />
+          <Route path="user-report" element={<UserReport />} />
         </Route>
 
         </Routes>

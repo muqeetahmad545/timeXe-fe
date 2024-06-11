@@ -8,6 +8,12 @@ const { Title } = Typography;
 
 const columns = [
   {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+    render: (date: string) => date ? format(new Date(date), 'PPP') : 'N/A',
+  }, 
+  {
     title: "Name",
     dataIndex: "userName",
     key: "userName",

@@ -4,7 +4,7 @@ import { Avatar, Col, Row, Spin } from "antd";
 import { fetchUsers } from "../../../services/userApis/userApis";
 import { fetchAllUserAttendance } from "../../../services/attendenceApis/attendence";
 import { useEffect, useState } from "react";
-import { User } from "../../types";
+import { User, AttendanceData } from "../../types";
 
 type PropUser = {
   user: string;
@@ -15,67 +15,40 @@ type PropUser = {
 
 export const RightSidebar = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [attendanceData, setAttendanceData] = useState<PropUser[]>([]);
+  const [attendanceData, setAttendanceData] = useState<AttendanceData[]>([]);
   const [totalEmployees, setTotalEmployees] = useState(0);
-  const [presentEmployees, setPresentEmployees] = useState(0);
+  const [presentEmployees, setPresentEmployees] = useState<AttendanceData[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState<string | null>(null);
+  
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetchAllUserAttendance({});
         const usersData = await fetchUsers();
         setUsers(usersData);
+        setTotalEmployees(usersData.length);
+        const today = new Date().toISOString().slice(0, 10); 
+        const response = await fetchAllUserAttendance({ startDate: today, endDate: today });
+        const presentEmployeesData = response.data.filter((record: AttendanceData) => record.status === "Present");
         setAttendanceData(response.data);
+        setPresentEmployees(presentEmployeesData);
       } catch (error) {
-        console.error("Error fetching user attendance:", error);
+        console.error("Error fetching data:", error);
+        setError("Error fetching data");
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []); 
+  }, []);
 
-
-
-  // useEffect(() => {
-  //   const fetchAttendanceData = async () => {
-  //     try {
-  //       const response = await fetchAllUserAttendance();
-  //       const usersData = await fetchUsers();
-  //       setUsers(usersData);
-  //       setAttendanceData(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching user attendance:", error);
-  //     }
-  //   };
-  //   fetchAttendanceData();
-  // }, []);
-
-  useEffect(() => {
-    const fetchUsersData = async () => {
-      const todayDate = new Date().toISOString().substring(0, 10);
-      const usersData = await fetchUsers();
-      setUsers(usersData);
-      setTotalEmployees(usersData.length);
-      const presentEmployeesToday = attendanceData.filter(
-        (att) =>
-          att.date.substring(0, 10) === todayDate && 
-          att.time_out !== ""
-      ).length;
-      setPresentEmployees(presentEmployeesToday);
-    };
-    fetchUsersData();
-  }, [attendanceData]); 
-
-  
   return (
     <div className="px-2 py-4">
-   <div className="ml-10 mb-8 mt-8">
-   <Typography className="!font-bold">Today's Attendance</Typography>
-      <Typography className="!text-slate-400">{new Date().toLocaleDateString()}</Typography>
-   </div>
+      <div className="ml-10 mb-8 mt-8">
+        <Typography className="!font-bold">Today's Attendance</Typography>
+        <Typography className="!text-slate-400">{new Date().toLocaleDateString()}</Typography>
+      </div>
 
       <div className="flex justify-around items-center mb-2 ml-5">
         <Avatar><UserOutlined className="text-slate-500"/></Avatar>
@@ -84,28 +57,28 @@ export const RightSidebar = () => {
           <Typography className="text-slate-500">{totalEmployees}</Typography>
         </div>
       </div>
+
       <div className="flex justify-around items-center mb-2 ml-10">
-        <Avatar><UserOutlined className="text-secondary-color "/></Avatar>
+        <Avatar><UserOutlined className="text-secondary-color"/></Avatar>
         <div className="ml-8"> 
           <Typography>Present Employees</Typography>
-          <Typography className="text-secondary-color">{presentEmployees}/{totalEmployees}</Typography>
+          <Typography className="text-secondary-color">{presentEmployees.length}/{totalEmployees}</Typography>
         </div>
       </div>
-      {/* <Typography className="!font-bold !mb-2">Recent Attendance</Typography>
-      <div className="flex justify-around items-center">
-        <Avatar><UserOutlined className="text-slate-500"/></Avatar>
-        <div>
-          <Typography>Total Employees</Typography>
-          <Typography>{totalEmployees}</Typography>
-        </div>
-      </div>
-      <div className="flex justify-around items-center">
+
+      <div className="flex justify-around items-center mb-2 ml-10">
         <Avatar><UserOutlined className="text-secondary-color"/></Avatar>
-        <div>
+        <div className="ml-12"> 
           <Typography>Present Employees</Typography>
-          <Typography className="text-secondary-color">{presentEmployees}/{totalEmployees}</Typography>
+          <div className="text-secondary-color">
+            {presentEmployees.map((employee, index) => (
+              <div className="flex items-center" key={index}>
+                <Typography>{index + 1}-{employee.userName}</Typography>
+              </div>
+            ))}
+          </div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

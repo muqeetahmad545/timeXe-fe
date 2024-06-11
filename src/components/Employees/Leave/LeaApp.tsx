@@ -7,6 +7,12 @@ import { fetchAllLeaveApplicationsUser } from "../../../services/leaveApplicatio
 import { format } from "date-fns";
 const columns = [
   {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+    render: (date: string) => date ? format(new Date(date), 'PPP') : 'N/A',
+  }, 
+   {
     title: "Start Date",
     dataIndex: "startDate",
     key: "startDate",
@@ -44,6 +50,7 @@ export const LeaApp: React.FC = () => {
     const getData = async () => {
       try {
         const response = await fetchAllLeaveApplicationsUser();
+        console.log("response:", response);
         if (response && response.content) {
           setLeaveApplicationData(response.content);
           console.log("setLeaveApplicationData:", response.content);

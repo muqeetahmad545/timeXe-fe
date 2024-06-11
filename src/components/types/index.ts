@@ -41,13 +41,13 @@ export interface User {
   totalLeave:number;
   totalAbsent:number;
   designation:string;
-  // Add other properties as needed
 }
 
 export interface AttendanceRecord {
   _id: string;
   user:string;
   userId: string;
+  userName:string;
   time_in: Date;
   time_out: Date;
   working_hours: Number;
@@ -57,7 +57,7 @@ export interface AttendanceRecord {
 }
 export interface AttendanceData {
   _id: string;
-  user: string;
+  userName: string;
   time_in: string;
   date: string;
   pendingLeave: number;
@@ -66,6 +66,7 @@ export interface AttendanceData {
   status: string;
   __v: number;
   time_out?: string;
+  leaveStatus?: string;
 }
 
 export interface ApplicationData {

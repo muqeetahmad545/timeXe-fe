@@ -1,6 +1,4 @@
 import { Typography, DatePicker, Divider, Row, Card, message } from "antd";
-// import { FaArrowRightToBracket } from "react-icons/fa6";
-// import { FaArrowRightFromBracket } from "react-icons/fa6";
 import { IoPauseCircleOutline } from "react-icons/io5";
 import { FaRegPlayCircle } from "react-icons/fa";
 import { PieChart } from "@mui/x-charts/PieChart";
@@ -44,40 +42,10 @@ const StyledText = styled("text")(({ theme }) => ({
 export const DashContent = () => {
   const [hourCard, setHourCard] = useState(false);
   const [action, setAction] = useState<number>(0);
-  const [attendanceData, setAttendanceData] = useState<AttendanceRecord | null>(
-    null
-  );
+  const [attendanceData, setAttendanceData] = useState<AttendanceRecord | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
-  // const [currentTime, setCurrentTime] = useState(new Date());
   const [checkIn, setCheckIn] = useState(false);
   const [workingHours, setWorkingHours] = useState("")
-
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     setCurrentTime(new Date());
-  //   }, 1000);
-  //   return () => clearInterval(intervalId);
-  // }, []);
-
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //   //  {attendanceData?.working_hours
-  //   //     ? convertToHHMMSS(Number(attendanceData?.working_hours)) 
-  //   //     : 0 }
-  //    console.log("workingHours",workingHours)
-  //     if(!attendanceData?.working_hours){
-  //     const currentTime :any = new Date();
-  //     const timeInc :any =attendanceData?.time_in
-  //     const timeIn : any = new Date(timeInc);
-  //     const diffMilliseconds = currentTime - timeIn;
-  //     const workingHours = convertToHHMMSS(diffMilliseconds);
-  //     setWorkingHours(workingHours as any);
-  //     }else{
-  //       setWorkingHours(attendanceData?.working_hours as any);
-  //     }
-     
-  //   }, 30000);
-  // }, [attendanceData?.working_hours]);
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUserAttendance();
@@ -86,7 +54,6 @@ export const DashContent = () => {
       setUserData(userDetail);
       const latRes = response.data[response.data.length - 1];
       const todayDate = new Date().toISOString().substring(0, 10);
-      // console.log(todayDate);
       if (Array.isArray(response.data) && response.data.length > 0) {
         console.log("response.data",latRes.time_in);
         if (
@@ -109,48 +76,8 @@ export const DashContent = () => {
     };
     fetchData();
   }, [action]);
-  const totalAttendance = attendanceData ? 1 : 0;
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetchUserAttendance();
-  //     const userDetail = await fetchUserData();
-  //     console.log(userDetail);
-  //     setUserData(userDetail);
-  //     const latRes = response.data[response.data.length - 1];
-  //     const todayDate = new Date().toISOString().substring(0, 10);
-  //     console.log(todayDate);
-  //     if (Array.isArray(response.data) && response.data.length > 0) {
-  //       console.log(latRes);
-  //       if (
-  //         latRes?.time_in &&
-  //         latRes?.time_in.toLocaleString().slice(0, 10) === todayDate
-  //       ) {
-  //         setCheckIn(true);
-  //         setHourCard(true);
-  //       }
-  //       if (latRes?.time_out) {
-  //         setHourCard(false);
-  //       }
-  //       console.log(
-  //         latRes?.time_in.toLocaleString().slice(0, 10) === todayDate
-  //       );
-  //       if (latRes?.time_in.toLocaleString().slice(0, 10) === todayDate) {
-  //         setAttendanceData(latRes);
-  //         console.log(attendanceData);
-  //         console.log(attendanceData?.time_in.toLocaleString().slice(0, 10));
-  //         // if (attendanceData?.time_in && !attendanceData?.time_out) {
-  //         //   setHourCard(true);
-  //         // } else if (attendanceData?.time_in && attendanceData?.time_out) {
-  //         //   setHourCard(false);
-  //         // } else {
-  //         //   setHourCard(false);
-  //         // }
-  //       }
-  //     }
-  //   };
-  //   fetchData();
-  // }, [action]);
+
   const handleCheckIn = async () => {
     try {
       const responseData = await CheckInApi();
@@ -307,10 +234,6 @@ const IconvertToHHMMSS = (seconds: number): string => {
         : "N/A"}
     </Title>
     </div>
-
-    {/* <Title level={5}>
-      {currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true})}
-    </Title> */}
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", fontSize: "15px", marginTop:"10px" , width:"100px"  }}>
     <span>Check In</span>
   </div>
@@ -324,12 +247,11 @@ const IconvertToHHMMSS = (seconds: number): string => {
       <div className="bg-white rounded-md flex justify-center items-center">
   <div className="" style={{marginLeft:55}}>
     <PieChart series={[{ data, innerRadius: 80 }]} {...size}>
-      <PieCenterLabel>{totalAttendance}</PieCenterLabel>
+      <PieCenterLabel>{''}</PieCenterLabel>
     </PieChart>
     <p className="mt-2 ml-32">Total Attendance</p>
   </div>
 </div>
-
         <div className="bg-white rounded-md">
           <Title
             level={5}

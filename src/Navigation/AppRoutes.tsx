@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
+import { Routes, Route, BrowserRouter as Router, useNavigate } from "react-router-dom";
 import { Login } from "../components/Admin/Login/Login";
 import { PrivateMap } from "./PrivateMap";
 import { SitMap } from "./SitMap";
@@ -18,6 +18,8 @@ import { LeaAppAdmin } from "../components/Employees/Leave/LeaAppAdmin";
 import { DailyAttendanceHistory } from "../components/Admin/Attendance/DailyAttendanceHistory";
 import { UserReport } from "../components/Admin/Attendance/UserReport";
 export const AppRoutes = () => {
+
+
   return (
     <div>
       <Router>

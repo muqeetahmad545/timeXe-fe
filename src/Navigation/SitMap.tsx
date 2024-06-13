@@ -1,9 +1,5 @@
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import { AddUser } from "../components/Admin/User/AddUser";
+import { Routes, Route, Navigate } from "react-router-dom";
+// import { AddUser } from "../components/Admin/User/AddUserModal";
 import { AppContent } from "../components/Admin/Dashboard/AppContent";
 import { Employees } from "../components/Admin/User/Employeees";
 import AppLayout from "../common/AppLayout";
@@ -24,19 +20,11 @@ export const SitMap = () => {
         />
         <Route
           path="/add-employee"
-          element={
-            <AppLayout>
-              <AddUser/>
-            </AppLayout>
-          }
-        />   
+          element={<AppLayout>{/* <AddUser /> */}</AppLayout>}
+        />
         <Route
           path="/dashboard/edit-employee/:userId"
-          element={
-            <AppLayout>
-              <AddUser />
-            </AppLayout>
-          }
+          element={<AppLayout>{/* <AddUser /> */}</AppLayout>}
         />
         <Route
           path="/dashboard/employees"
@@ -53,13 +41,13 @@ export const SitMap = () => {
               <AttendanceHistory />
             </AppLayout>
           }
-        />  
+        />
         <Route
-         path= "/dashboard/leave-applications"
+          path="/dashboard/leave-applications"
           element={
             <AppLayout>
               {/* <LeaveModal /> */}
-              <LeaAppAdmin/>
+              <LeaAppAdmin />
             </AppLayout>
           }
         />

@@ -7,7 +7,7 @@ import {
   UsergroupAddOutlined,
   CalendarOutlined,
   FieldTimeOutlined,
-  UserSwitchOutlined
+  UserSwitchOutlined,
 } from "@ant-design/icons";
 
 export const employeeSidebar = [
@@ -29,65 +29,63 @@ export const employeeSidebar = [
     label: "Leave Applications",
     path: "leave-applications",
   },
-   {
+  {
     key: "4",
     icon: LogoutOutlined,
     label: "Logout",
     path: "/",
-    onClick: () => {
-    }
+    onClick: () => {},
   },
 ];
 
 export const adminSidebar = [
-    {
-      key: "1",
-      icon: DashboardOutlined,
-      label: "Dashboard",
-      path: "/dashboard",
-    },
-    {
-      key: "2",
-      icon: UsergroupAddOutlined,
-      label: "Add Employee",
-      path: "add-employee",
-    },
-    {
-      key: "3",
-      icon: UserSwitchOutlined,
-      label: "Employees",
-      path: "employees",
-    },
-    {
-      key: "4",
-      icon: CalendarOutlined,
-      label: "Attendence Report",
-      path: "attendence-report",
-    },  
-    {
-      key: "5",
-      icon: FieldTimeOutlined,
-      label: "Daily Report",
-      path: "daily-report",
-    },
-    {
-      key: "6",
-      icon: UserOutlined,
-      label: "User Report",
-      path: "user-report",
-    }, 
-    {
-      key: "7",
-      icon: UploadOutlined,
-      label: "Leave Applications",
-      path: "leave-applications",
-    },    
-    {
-      key: "8",
-      icon: LogoutOutlined,
-      label: "Logout",
-      path: "/",
-      onClick: () => {
-  }
-      },
-  ]
+  {
+    key: "1",
+    icon: DashboardOutlined,
+    label: "Dashboard",
+    path: "/dashboard",
+  },
+  // {
+  //   key: "2",
+  //   icon: UsergroupAddOutlined,
+  //   label: "Add Employee",
+  //   path: "add-employee",
+  // },
+  {
+    key: "3",
+    icon: UserSwitchOutlined,
+    label: "Employees",
+    path: "employees",
+  },
+  {
+    key: "4",
+    icon: CalendarOutlined,
+    label: "Attendence Report",
+    path: "attendence-report",
+  },
+  {
+    key: "5",
+    icon: FieldTimeOutlined,
+    label: "Daily Report",
+    path: "daily-report",
+  },
+  {
+    key: "6",
+    icon: UserOutlined,
+    label: "User Report",
+    path: "user-report",
+  },
+  {
+    key: "7",
+    icon: UploadOutlined,
+    label: "Leave Applications",
+    path: "leave-applications",
+  },
+  {
+    key: "8",
+    icon: LogoutOutlined,
+    label: "Logout",
+    path: "/",
+    onClick: () => {},
+  },
+];

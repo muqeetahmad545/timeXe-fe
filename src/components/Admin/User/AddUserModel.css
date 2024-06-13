@@ -1,0 +1,17 @@
+.addUser {
+}
+
+.footerContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.footerButton {
+  margin: 0 5px;
+}
+
+.form-container {
+  border: 1px solid #e8e8e8; /* Example border style */
+  padding: 20px; /* Example padding */
+  border-radius: 5px; /* Example border radius */
+}

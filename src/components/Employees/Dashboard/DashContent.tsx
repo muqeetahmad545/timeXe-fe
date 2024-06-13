@@ -25,8 +25,6 @@ function PieCenterLabel({ children }: { children: React.ReactNode }) {
 }
 const data = [{ value: 5 }];
 
-
-
 const size = {
   width: 400,
   height: 200,
@@ -42,20 +40,22 @@ const StyledText = styled("text")(({ theme }) => ({
 export const DashContent = () => {
   const [hourCard, setHourCard] = useState(false);
   const [action, setAction] = useState<number>(0);
-  const [attendanceData, setAttendanceData] = useState<AttendanceRecord | null>(null);
+  const [attendanceData, setAttendanceData] = useState<AttendanceRecord | null>(
+    null
+  );
   const [userData, setUserData] = useState<UserData | null>(null);
   const [checkIn, setCheckIn] = useState(false);
-  const [workingHours, setWorkingHours] = useState("")
+  const [workingHours, setWorkingHours] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetchUserAttendance();
       const userDetail = await fetchUserData();
-      console.log("response",response.data);
+      console.log("response", response.data);
       setUserData(userDetail);
       const latRes = response.data[response.data.length - 1];
       const todayDate = new Date().toISOString().substring(0, 10);
       if (Array.isArray(response.data) && response.data.length > 0) {
-        console.log("response.data",latRes.time_in);
+        console.log("response.data", latRes.time_in);
         if (
           latRes?.time_in &&
           latRes?.time_in.toLocaleString().slice(0, 10) === todayDate
@@ -77,11 +77,10 @@ export const DashContent = () => {
     fetchData();
   }, [action]);
 
-
   const handleCheckIn = async () => {
     try {
       const responseData = await CheckInApi();
-      console.log("CheckInApi",CheckInApi);
+      console.log("CheckInApi", CheckInApi);
       if (responseData.checkedIn) {
         message.success("You CheckedIn successfully");
         setCheckIn(true);
@@ -109,34 +108,37 @@ export const DashContent = () => {
       message.error("Failed to check out");
     }
   };
-  
+
   const convertToHHMMSS = (decimalHours: number) => {
     if (isNaN(decimalHours)) {
-      return 'N/A';
+      return "N/A";
     }
     const totalSeconds = Math.floor(decimalHours * 3600);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(seconds).padStart(2, "0")}`;
   };
-const IconvertToHHMMSS = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
+  const IconvertToHHMMSS = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
 
-  const formattedHours = hours.toString().padStart(2, '0');
-  const formattedMinutes = minutes.toString().padStart(2, '0');
-  const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
+    const formattedHours = hours.toString().padStart(2, "0");
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+    const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
 
-  return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
-};
-
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  };
 
   const calculateWorkingHours = (): string => {
     if (!attendanceData || !attendanceData.time_in) return "0";
     const currentTime = new Date();
-    const timeDifference = currentTime.getTime() - new Date(attendanceData.time_in).getTime();
+    const timeDifference =
+      currentTime.getTime() - new Date(attendanceData.time_in).getTime();
     const workingHoursInSeconds = timeDifference / 1000;
     return IconvertToHHMMSS(workingHoursInSeconds);
   };
@@ -150,13 +152,12 @@ const IconvertToHHMMSS = (seconds: number): string => {
   }, [calculateWorkingHours]);
 
   return (
-    
     <div>
       <div className="bg-slate-200 pb-4">
         <div className="flex justify-between bg-slate-200 p-1 rounded-md">
           <div className="border-l-4 border-secondary-color h-9 flex items-center">
             <Title level={5} className="ml-2">
-              Good Day, {userData?.firstName && userData?.lastName ? userData?.firstName + ' ' + userData?.lastName : ''}
+              Good Day, {(userData?.fullName, userData?.fullName + " ")}
             </Title>
           </div>
           <DatePicker />
@@ -170,88 +171,174 @@ const IconvertToHHMMSS = (seconds: number): string => {
                   ? attendanceData?.time_in.toLocaleString().slice(11, 19)
                   : "You did not checkIn"}
               </Title>
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-    <FaRegPlayCircle style={{ fontSize: "40px" }} />
-  </div>
-  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", fontSize: "15px", marginTop:"10px" }}>
-    <span>Checked In</span>
-  </div>
-        </Card>
-          )}
-          {checkIn && (
-            <Card className="mr-2 bg-orange-100" onClick={handleCheckOut} >
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
-              <Title level={5}>
-      {attendanceData?.time_out
-        ? new Date(attendanceData?.time_out).toLocaleString('en-US', {
-            timeZone: 'Asia/Karachi', 
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true 
-          })
-        : "0"}
-              </Title>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FaRegPlayCircle style={{ fontSize: "40px" }} />
               </div>
-   
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-    <IoPauseCircleOutline style={{ fontSize: "40px" }} />
-  </div>
-  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", fontSize: "15px", marginTop:"10px" }}>
-    <span>Checked Out</span>
-  </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "15px",
+                  marginTop: "10px",
+                }}
+              >
+                <span>Checked In</span>
+              </div>
             </Card>
           )}
           {checkIn && (
-              <Card className="mr-2 bg-blue-100" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width:"150px" }}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
-            <Title level={5}>
-                {attendanceData?.working_hours
-                 ? convertToHHMMSS(Number(attendanceData?.working_hours)) 
-                  : calculateWorkingHours()}
-              </Title>
-            </div>
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", fontSize: "15px", marginTop:"10px" }}>
-              <span>Working hours</span>
-  </div>
+            <Card className="mr-2 bg-orange-100" onClick={handleCheckOut}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Title level={5}>
+                  {attendanceData?.time_out
+                    ? new Date(attendanceData?.time_out).toLocaleString(
+                        "en-US",
+                        {
+                          timeZone: "Asia/Karachi",
+                          hour: "numeric",
+                          minute: "numeric",
+                          hour12: true,
+                        }
+                      )
+                    : "0"}
+                </Title>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <IoPauseCircleOutline style={{ fontSize: "40px" }} />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "15px",
+                  marginTop: "10px",
+                }}
+              >
+                <span>Checked Out</span>
+              </div>
             </Card>
           )}
-       {hourCard ? (
-   <Card className="mr-2 bg-blue-100" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-    <title>
-      {attendanceData?.time_in
-        ? attendanceData?.time_in.toLocaleString().slice(11, 19)
-        : "Check Out after CheckIn"}
-    </title>
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
-    <Title level={5}>
-      {attendanceData?.time_in
-        ? new Date(attendanceData?.time_in).toLocaleString('en-US', {
-            timeZone: 'Asia/Karachi', 
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true 
-          })
-        : "N/A"}
-    </Title>
-    </div>
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", fontSize: "15px", marginTop:"10px" , width:"100px"  }}>
-    <span>Check In</span>
-  </div>
-  </Card>
-) : (
-  ""
-)}
+          {checkIn && (
+            <Card
+              className="mr-2 bg-blue-100"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "150px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Title level={5}>
+                  {attendanceData?.working_hours
+                    ? convertToHHMMSS(Number(attendanceData?.working_hours))
+                    : calculateWorkingHours()}
+                </Title>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "15px",
+                  marginTop: "10px",
+                }}
+              >
+                <span>Working hours</span>
+              </div>
+            </Card>
+          )}
+          {hourCard ? (
+            <Card
+              className="mr-2 bg-blue-100"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <title>
+                {attendanceData?.time_in
+                  ? attendanceData?.time_in.toLocaleString().slice(11, 19)
+                  : "Check Out after CheckIn"}
+              </title>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Title level={5}>
+                  {attendanceData?.time_in
+                    ? new Date(attendanceData?.time_in).toLocaleString(
+                        "en-US",
+                        {
+                          timeZone: "Asia/Karachi",
+                          hour: "numeric",
+                          minute: "numeric",
+                          hour12: true,
+                        }
+                      )
+                    : "N/A"}
+                </Title>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "15px",
+                  marginTop: "10px",
+                  width: "100px",
+                }}
+              >
+                <span>Check In</span>
+              </div>
+            </Card>
+          ) : (
+            ""
+          )}
         </Row>
       </div>
       <div className="flex items-center justify-around bg-slate-200 rounded-md mt-4 p-2">
-      <div className="bg-white rounded-md flex justify-center items-center">
-  <div className="" style={{marginLeft:55}}>
-    <PieChart series={[{ data, innerRadius: 80 }]} {...size}>
-      <PieCenterLabel>{''}</PieCenterLabel>
-    </PieChart>
-    <p className="mt-2 ml-32">Total Attendance</p>
-  </div>
-</div>
+        <div className="bg-white rounded-md flex justify-center items-center">
+          <div className="" style={{ marginLeft: 55 }}>
+            <PieChart series={[{ data, innerRadius: 80 }]} {...size}>
+              <PieCenterLabel>{""}</PieCenterLabel>
+            </PieChart>
+            <p className="mt-2 ml-32">Total Attendance</p>
+          </div>
+        </div>
         <div className="bg-white rounded-md">
           <Title
             level={5}

@@ -1,17 +1,21 @@
 export interface UserData {
-  firstName: string;
-  lastName: string;
-  role: string;
-  designation: string;
+  fullName: string;
+  fatherName: string;
   email: string;
-  salary:number;
-  pendingLeave:number;
-  totalLeave:number;
-  totalAbsent:number;
-  cnic:number;
-  dob:number;
-  joiningDate:number;
-  userLeaveApplication:number;
+  address: string;
+  phone: Number;
+  companyName: string;
+  department: string;
+  jobPosition: string;
+  profileImage: string;
+  manager: string;
+  password: string;
+  confirmPassword: string;
+  cnic: string;
+  designation: string;
+  dob: Date;
+  joiningDate: Date;
+  role: string;
   // joiningDate:Date;
 }
 export interface FilterParams {
@@ -35,25 +39,25 @@ export interface User {
   lastName: string;
   email: string;
   role: string;
-  cnic: string; 
+  cnic: string;
   employeeCount: number;
-  pendingLeave:number;
-  totalLeave:number;
-  totalAbsent:number;
-  designation:string;
+  pendingLeave: number;
+  totalLeave: number;
+  totalAbsent: number;
+  designation: string;
 }
 
 export interface AttendanceRecord {
   _id: string;
-  user:string;
+  user: string;
   userId: string;
-  userName:string;
+  userName: string;
   time_in: Date;
   time_out: Date;
   working_hours: Number;
-  pendingLeave:number;
-  totalLeave:number;
-  totalAbsent:number;
+  pendingLeave: number;
+  totalLeave: number;
+  totalAbsent: number;
 }
 export interface AttendanceData {
   _id: string;
@@ -78,4 +82,4 @@ export interface ApplicationData {
   startDate?: Date;
   endDate?: Date;
   leaveStatus?: string;
-};
+}

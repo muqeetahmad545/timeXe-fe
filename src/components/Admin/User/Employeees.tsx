@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Divider, Table,Row,Col,Spin, Typography, message } from "antd";
+import { Divider, Table, Row, Col, Spin, Typography, message } from "antd";
 import { User } from "../../types";
 import { fetchUsers, deleteUser } from "../../../services/userApis/userApis";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import Search from "antd/es/input/Search";
+import { AddUserModal } from "./AddUserModal";
 
 const { Title } = Typography;
 
 export const Employees: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchName, setSearchName] = useState<string>(""); 
+  const [searchName, setSearchName] = useState<string>("");
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -32,7 +33,7 @@ export const Employees: React.FC = () => {
 
   if (loading) {
     return (
-      <Row justify="center" align="middle" style={{ height: '100vh' }}>
+      <Row justify="center" align="middle" style={{ height: "100vh" }}>
         <Col>
           <Spin size="large" />
         </Col>
@@ -44,7 +45,6 @@ export const Employees: React.FC = () => {
     const fullName = `${record.firstName} ${record.lastName}`.toLowerCase();
     return fullName.includes(searchName.toLowerCase());
   });
-  
 
   const handleDelete = async (userId: string) => {
     try {
@@ -58,15 +58,16 @@ export const Employees: React.FC = () => {
   };
 
   const handleEdit = (user: User) => {
-    navigate(`/dashboard/edit-employee/${user._id}`, { state: { user } });
+    <AddUserModal />;
+
+    // navigate(`/dashboard/edit-employee/${user._id}`, { state: { user } });
   };
 
   const columns = [
     {
       title: "Name",
-      dataIndex: "firstName",
-      key: "name",
-      render: (_: any, record: any) => `${record.firstName} ${record.lastName}`,
+      dataIndex: "fullName",
+      key: "fullName",
     },
     {
       title: "Email",
@@ -118,12 +119,19 @@ export const Employees: React.FC = () => {
             Employee Details
           </Title>
         </div>
-        <Search
-          placeholder="Search by name"
-          allowClear
-          onSearch={(value) => setSearchName(value)}
-          style={{ width: 200, margin: "0 10px" }}
-        />
+        <Row justify="space-between" align="middle" className="">
+          <Col>
+            <Search
+              placeholder="Search by name"
+              allowClear
+              onSearch={(value) => setSearchName(value)}
+              style={{ width: 200 }}
+            />
+          </Col>
+          <Col>
+            <AddUserModal />
+          </Col>
+        </Row>
       </div>
       <Divider />
       <Table dataSource={filteredUsers} columns={columns} />

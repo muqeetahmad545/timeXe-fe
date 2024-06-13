@@ -81,11 +81,11 @@ export const adminSidebar = [
     label: "Leave Applications",
     path: "leave-applications",
   },
-  {
-    key: "8",
-    icon: LogoutOutlined,
-    label: "Logout",
-    path: "/",
-    onClick: () => {},
-  },
+  // {
+  //   key: "8",
+  //   icon: LogoutOutlined,
+  //   label: "Logout",
+  //   path: "/",
+  //   onClick: () => {},
+  // },
 ];

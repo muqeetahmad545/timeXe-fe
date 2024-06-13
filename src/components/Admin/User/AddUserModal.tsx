@@ -246,7 +246,7 @@
 //       ? []
 //       : [{ required: true, message: "Please input Password!" }]
 //   }
-// >
+// >A
 //   <Input.Password
 //     placeholder={
 //       isEditing ? "Leave blank to keep unchanged" : "Enter password"
@@ -421,7 +421,7 @@ export const AddUserModal: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between bg-slate-200 p-1 rounded-md">
-        <div className="border-l-4 border-secondary-color h-9 flex items-center">
+        <div className="border-l-4 r h-9 flex items-center">
           <Title level={5} className="ml-2"></Title>
         </div>
         <Button onClick={showModal}>
@@ -565,7 +565,7 @@ export const AddUserModal: React.FC = () => {
                       label="CNIC"
                       name="cnic"
                       rules={[
-                        { required: true, message: "Please input CNIC!" },
+                        { required: true, message: "Please Enter CNIC!" },
                         {
                           validator: (_, value) =>
                             value && validateCNIC(value)
@@ -690,7 +690,7 @@ export const AddUserModal: React.FC = () => {
                       rules={[
                         {
                           required: true,
-                          message: "Please input user Joining Date",
+                          message: "Please Enter user Joining Date",
                         },
                       ]}
                     >
@@ -710,7 +710,7 @@ export const AddUserModal: React.FC = () => {
                           : [
                               {
                                 required: true,
-                                message: "Please input Password!",
+                                message: "Please Enter Password!",
                               },
                             ]
                       }

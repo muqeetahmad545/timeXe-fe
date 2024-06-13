@@ -1,7 +1,17 @@
 .loginForm{
 
 }
+.bold-text {
+    font-weight: 600;
+}
 
 .loginForm label {
     min-width: 300px;
+}
+
+.passwordFormItem {
+    text-align: left;
+}
+.emailFormItem {
+    text-align: left;
 }

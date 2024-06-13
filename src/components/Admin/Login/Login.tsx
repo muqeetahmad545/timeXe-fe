@@ -49,45 +49,48 @@ if (role) {
   };
 
   return (
-    <div className="flex items-center justify-center w-full h-full bg-slate-200">
-      <div className="p-8 flex rounded-xl">
+    <div className="flex items-center justify-center w-full h-full bg-slate-200 " style={{height:"100vh"}}>
+      <div className="p-8 flex rounded-xl" style={{width:"70%"}}>
         <div className="w-1/2 p-8 bg-white rounded-l-lg text-center">
-          <Typography variant="h4">Welcome to X-Time</Typography>
-          <div className="mt-8">
+          <Typography variant="h4" className="bold-text">Welcome to X-Time</Typography>
+          <div className="mt-8" >
             <Divider />
           </div>
-          <div>
+          <div className="" style={{marginTop:"30px"}}>
             <Typography variant="h6">Login</Typography>
           </div>
-          <div className="loginForm" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '40vh' }}>
+          <div className="loginForm" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '30vh' }}>
             <Form
               name="basic"
               labelCol={{ offset:2,span: 4 }}
-              wrapperCol={{ span: 14 }}
+              wrapperCol={{ span: 12 }}
               initialValues={{ remember: true }}
               onFinish={onFinish}
-              className=""
             >
               <Form.Item
                 label="Email"
                 name="email"
+                className="emailFormItem" 
+                colon={false}
                 rules={[
-                  { required: true, message: "Please input your Email !" },
+                  { required: true, message: "Please input your Email" },
                 ]}
               >
-                <Input placeholder="Enter your email" />
-              </Form.Item>
+    <Input type="email" placeholder="Enter your email" />
+    </Form.Item>
               <Form.Item
                 label="Password"
                 name="password"
+                className="passwordFormItem" 
+                colon={false}
                 rules={[
-                  { required: true, message: "Please input your password !" },
+                  { required: true, message: "Please input your password" },
                 ]}
               >
                 <Input.Password placeholder="Enter your password" />
               </Form.Item>
               <div className="mr-20 mt-8">
-                <Form.Item wrapperCol={{ offset: 12, span: 8 }}>
+                <Form.Item wrapperCol={{ offset: 10, span: 6 }}>
                   <Spin spinning={loading} indicator={<Spin style={{ fontSize: 24 }}/>} size="large">
                     <Button
                       type="primary"
@@ -105,7 +108,7 @@ if (role) {
         </div>
         <div className="w-1/2 bg-secondary-color flex flex-col items-center justify-center px-4 text-white rounded-r-lg">
           <Typography variant="h5" className="lg:!font-bold  lg:!text-2xl lg:!mb-5">
-          Welcome to WorkTrack: Your Productivity Companion
+         Your Productivity Companion
           </Typography>
           <Typography>
           Embark on a seamless journey with WorkTrack, your all-in-one productivity companion. Log in to our innovative attendance management system and unlock a world of efficiency. Seamlessly track your daily office attendance, manage tasks effortlessly, and foster collaboration with your team. With WorkTrack, streamline your workflow, boost productivity, and make every moment count.

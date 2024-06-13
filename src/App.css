@@ -36,3 +36,8 @@
     transform: rotate(360deg);
   }
 }
+
+.ant-menu:last-child {
+  position: absolute;
+  bottom: 0;
+}

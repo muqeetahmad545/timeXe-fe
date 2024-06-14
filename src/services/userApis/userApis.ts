@@ -28,6 +28,7 @@ export const fetchUsers = async (): Promise<User[]> => {
     }
   };
 
+  
   export const updateUser = async (userId: string, updateData: Partial<User>): Promise<void> => {
     try {
       await attendanceAPI.patch(`${process.env.REACT_APP_API_URL}/update`, updateData, {

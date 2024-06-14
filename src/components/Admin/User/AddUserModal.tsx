@@ -306,6 +306,7 @@ import {
   Modal,
   Divider,
   Upload,
+  Card,
 } from "antd";
 import moment from "moment";
 import attendanceAPI from "../../../services/axios";
@@ -313,6 +314,7 @@ import { updateUser } from "../../../services/userApis/userApis";
 import { User } from "../../types";
 import { EditOutlined, UploadOutlined, UserOutlined } from "@ant-design/icons";
 import "./AddUserModel.css";
+import Dropzone from 'react-dropzone';
 
 const { Title } = Typography;
 
@@ -334,6 +336,12 @@ type FieldType = {
   dob?: Date;
   joiningDate?: Date;
   role?: string;
+  gender?: string;
+  salary?: string;
+  userName?: string;
+  signInEmail?: string;
+  dropZone?: string;
+  Skills?: string;
 };
 
 const validateCNIC = (cnic: string): boolean => {
@@ -359,6 +367,12 @@ export const AddUserModal: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState("");
+  const [files, setFiles] = useState([]);
+
+  // const handleDrop = (acceptedFiles) => {
+  //   // Concatenate new files with existing files
+  //   setFiles([...files, ...acceptedFiles]);
+  // };
 
   // const handleUploadChange = (info) => {
   //   if (info.file.status === "done") {
@@ -394,14 +408,15 @@ export const AddUserModal: React.FC = () => {
     }
   }, [location.state, form]);
 
+
   const onFinish = async (values: FieldType) => {
     try {
       if (isEditing && user) {
         const { password, confirmPassword, ...updateValues } = values;
         const updatedValues = password ? values : updateValues;
-
+  
         await updateUser(user._id, updatedValues);
-        message.success("user updated successfully");
+        message.success("User updated successfully");
       } else {
         const response = await attendanceAPI.post(
           `${process.env.REACT_APP_API_URL}/users`,
@@ -410,6 +425,8 @@ export const AddUserModal: React.FC = () => {
         );
         console.log("Success:", response.data);
         message.success("User added successfully");
+        setIsModalOpen(false);
+        // form.resetFields();
       }
       navigate("/dashboard/employees");
     } catch (error) {
@@ -417,6 +434,33 @@ export const AddUserModal: React.FC = () => {
       message.error("Failed to save user");
     }
   };
+  
+
+  // const onFinish = async (values: FieldType) => {
+  //   try {
+  //     if (isEditing && user) {
+  //       const { password, confirmPassword, ...updateValues } = values;
+  //       const updatedValues = password ? values : updateValues;
+
+  //       await updateUser(user._id, updatedValues);
+  //       message.success("user updated successfully");
+  //     } else {
+  //       const response = await attendanceAPI.post(
+  //         `${process.env.REACT_APP_API_URL}/users`,
+  //         values,
+  //         {}
+  //       );
+  //       console.log("Success:", response.data);
+  //       message.success("User added successfully");
+  //       setIsModalOpen(false); 
+  //       form.resetFields();
+  //     }
+  //     navigate("/dashboard/employees");
+  //   } catch (error) {
+  //     console.error("Failed:", error);
+  //     message.error("Failed to save user");
+  //   }
+  // };
 
   return (
     <div>
@@ -490,7 +534,9 @@ export const AddUserModal: React.FC = () => {
           </Col>
 
           <Col xs={8} sm={2} md={16} lg={18}>
+            <div className="modalBody" style={{ maxHeight: "60vh", overflowX: "hidden"  ,scrollbarWidth: "thin" }}>
             <div className="form-container">
+
               <Form
                 form={form}
                 className="mt-4 w-full"
@@ -503,6 +549,12 @@ export const AddUserModal: React.FC = () => {
                 layout="vertical"
               >
                 <Col xs={24} sm={12} md={12} lg={8} xl={8}></Col>
+                <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
+          <Title level={5} className="ml-2">
+          User Details
+          </Title>
+        </div>
+
                 <Row gutter={[16, 0]}>
                   {" "}
                   <Col xs={24} sm={12}>
@@ -516,7 +568,7 @@ export const AddUserModal: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input placeholder="Enter full name" />
+                      <Input  placeholder="Enter full name" />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -525,6 +577,7 @@ export const AddUserModal: React.FC = () => {
                     </Form.Item>
                   </Col>
                 </Row>
+                
                 <Row gutter={[16, 0]}>
                   <Col xs={24} sm={12}>
                     <Form.Item
@@ -534,7 +587,8 @@ export const AddUserModal: React.FC = () => {
                         { required: true, message: "Please Enter Email" },
                       ]}
                     >
-                      <Input placeholder="Enter email" />
+    <Input type="email" placeholder="Enter  email" />
+
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -543,6 +597,7 @@ export const AddUserModal: React.FC = () => {
                     </Form.Item>
                   </Col>
                 </Row>
+
 
                 <Row gutter={[16, 0]}>
                   <Col xs={24} sm={12}>
@@ -584,6 +639,44 @@ export const AddUserModal: React.FC = () => {
                 <Row gutter={[16, 0]}>
                   <Col xs={24} sm={12}>
                     <Form.Item
+                      label="Select Gender"
+                      labelCol={{ span: 12 }}
+                      name="gender"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please Select one of the values!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        defaultValue="Select Gender"
+                        onChange={handleChange}
+                        options={[
+                          { value: "Male", label: "Male" },
+                          { value: "Female", label: "Female" },
+                          
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+
+                  <Col xs={24} sm={12}>
+                  <Form.Item label="DOB" name="dob">
+                      <DatePicker style={{ width: "100%" }} />
+                    </Form.Item>
+                  </Col>
+                
+                </Row>
+                <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
+          <Title level={5} className="ml-2">
+          Jobs Details
+          </Title>
+        </div>
+
+                <Row gutter={[16, 0]}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
                       label="Company Name"
                       labelCol={{ span: 10 }}
                       name="companyName"
@@ -606,7 +699,15 @@ export const AddUserModal: React.FC = () => {
                 <Row gutter={[16, 0]}>
                   <Col xs={24} sm={12}>
                     <Form.Item label="Job Position" name="jobPosition">
-                      <Input placeholder="Enter job position" />
+                    <Select
+                        defaultValue="Select Gender"
+                        onChange={handleChange}
+                        options={[
+                          { value: "Male", label: "Male" },
+                          { value: "Female", label: "Female" },
+                          
+                        ]}
+                      />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -679,8 +780,8 @@ export const AddUserModal: React.FC = () => {
 
                 <Row gutter={[16, 0]}>
                   <Col xs={24} sm={12}>
-                    <Form.Item label="DOB" name="dob">
-                      <DatePicker style={{ width: "100%" }} />
+                  <Form.Item label="Salary" name="salary">
+                      <Input placeholder="Enter Salary " />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
@@ -698,7 +799,65 @@ export const AddUserModal: React.FC = () => {
                     </Form.Item>
                   </Col>
                 </Row>
+                {/* <Row gutter={[16, 0]}>
+                  <Col xs={24} sm={12}>
+                  <Form.Item label="File" name="dropZone">
+                      <Input placeholder="Upload File " />
+                    </Form.Item>
+                  </Col>
+                  </Row> */}
 
+<Row gutter={[20, 0]}>
+<Col xs={24} sm={12}>
+                    <Form.Item label="Skills" name="skills">
+                      <Input placeholder="Enter skills" />
+                    </Form.Item>
+                  </Col>
+        <Col xs={24} sm={12}>
+          <Form.Item label="Files" name="dropZone">
+            <Dropzone>
+              {({ getRootProps, getInputProps }) => (
+                <div {...getRootProps()} style={{ border: '2px dashed #0087F7', borderRadius: '5px', padding: '2px', cursor: 'pointer' }}>
+                  <input {...getInputProps()} />
+                  <p>Drag & drop files here, or click to select files</p>
+                </div>
+              )}
+            </Dropzone>
+          </Form.Item>
+        </Col>
+        
+      </Row>
+      <Row gutter={[16, 0]}>
+        <Col xs={24} sm={12}>
+        </Col>
+      </Row>
+                <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
+          <Title level={5} className="ml-2">
+          SignIn Details
+          </Title>
+        </div>
+                <Row gutter={[16, 0]}>
+                  {" "}
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="User Name"
+                      name="userName"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please Enter Full Name",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Enter full name" />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="SignIn Email" name="signInEmail">
+                      <Input type="email" placeholder="Enter SignIn Email" />
+                    </Form.Item>
+                  </Col>
+                </Row>
                 <Row gutter={[16, 0]}>
                   <Col xs={24} sm={12}>
                     <Form.Item
@@ -751,7 +910,9 @@ export const AddUserModal: React.FC = () => {
                     </Form.Item>
                   </Col>
                 </Row>
+         
               </Form>
+              </div>
             </div>
           </Col>
         </Row>

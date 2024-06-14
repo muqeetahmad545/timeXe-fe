@@ -29,13 +29,13 @@ export const employeeSidebar = [
     label: "Leave Applications",
     path: "leave-applications",
   },
-  {
-    key: "4",
-    icon: LogoutOutlined,
-    label: "Logout",
-    path: "/",
-    onClick: () => {},
-  },
+  // {
+  //   key: "4",
+  //   icon: LogoutOutlined,
+  //   label: "Logout",
+  //   path: "/",
+  //   onClick: () => {},
+  // },
 ];
 
 export const adminSidebar = [

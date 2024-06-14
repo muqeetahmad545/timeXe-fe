@@ -157,7 +157,7 @@ export const DashContent = () => {
         <div className="flex justify-between bg-slate-200 p-1 rounded-md">
           <div className="border-l-4 border-secondary-color h-9 flex items-center">
             <Title level={5} className="ml-2">
-              Good Day, {(userData?.fullName, userData?.fullName + " ")}
+              {/* Good Day, {(userData?.fullName, userData?.fullName + " ")} */}
             </Title>
           </div>
           <DatePicker />

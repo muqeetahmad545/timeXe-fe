@@ -153,41 +153,39 @@ export const Profile = () => {
                 : ""} */}
             </Title>
             <Row className="w-full flex text-slate-400 font-semibold space-x-36">
-              <div className="grid mx-4">
-                <span className="text-black">ROLE</span>
-                <span>{userData?.role}</span>
-              </div>
-              <div className="grid mx-4">
-                <span className="text-black">Designation</span>
-                <span>{userData?.designation}</span>
-              </div>
-              <div className="grid mx-4">
-                <span className="text-black">EMAIL ADDRESS</span>
-                <span>{userData?.email}</span>
-              </div>
-              {/* <div className="grid mx-4"> */}
-              {/* <span className="text-black">SALARY</span>
-              <span>{userData?.}</span></div> */}
-              <div className="grid mx-4">
-                <span className="text-black">CNIC</span>
-                <span>{userData?.cnic}</span>
-              </div>
-              <div className="grid mx-4">
-                <span className="text-black">DOB</span>
-                <span>
-                  {userData?.dob
-                    ? format(new Date(userData?.dob), "PPP")
-                    : "N/A"}
-                </span>
-              </div>
-              <div className="grid mx-4">
-                <span className="text-black">JOINING DATE</span>
-                <span>
-                  {userData?.joiningDate
-                    ? format(new Date(userData?.joiningDate), "PPP")
-                    : "N/A"}
-                </span>
-              </div>
+            <div className="grid mx-4">
+  <span className="text-black">Role</span>
+  <span>{userData?.jobDetail?.role}</span>
+</div>
+<div className="grid mx-4">
+  <span className="text-black">Designation</span>
+  <span>{userData?.jobDetail?.designation}</span>
+</div>
+<div className="grid mx-4">
+  <span className="text-black">Email Address</span>
+  <span>{userData?.userDetail?.email}</span>
+</div>
+<div className="grid mx-4">
+  <span className="text-black">CNIC</span>
+  <span>{userData?.userDetail?.cnic}</span>
+</div>
+<div className="grid mx-4">
+  <span className="text-black">DOB</span>
+  <span>
+    {userData?.userDetail?.dob
+      ? format(new Date(userData?.userDetail?.dob), "PPP")
+      : "N/A"}
+  </span>
+</div>
+<div className="grid mx-4">
+  <span className="text-black">Joining Date</span>
+  <span>
+    {userData?.jobDetail?.joiningDate
+      ? format(new Date(userData?.jobDetail?.joiningDate), "PPP")
+      : "N/A"}
+  </span>
+</div>
+
             </Row>
           </div>
         </div>

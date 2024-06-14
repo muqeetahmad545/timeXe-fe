@@ -25,12 +25,13 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     localStorage.clear();
     navigate('/'); 
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchUserData();
-        if (response && response.role !== undefined) {
-          setUserRole(response.role);
+        if (response && response.jobDetail && response.jobDetail.role !== undefined) {
+          setUserRole(response.jobDetail.role);
         } else {
           setUserRole("");
         }
@@ -38,9 +39,26 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         console.error("Error fetching user data:", error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetchUserData();
+  //       if (response && response.role !== undefined) {
+  //         setUserRole(response.role);
+  //       } else {
+  //         setUserRole("");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching user data:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
   const role = userRole === "admin" ? adminSidebar : employeeSidebar;
 
   return (
@@ -87,7 +105,7 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
               },
             }))}
           />
-<div style={{ position: 'absolute', bottom: 0, width: '100%', padding: '16px', marginLeft:"20px" }}>
+<div style={{ position: 'absolute', bottom: 70, width: '100%', padding: '16px', marginLeft:"20px" }}>
   <button
     style={{ display: 'flex', alignItems: 'center', width: '100%',  color: 'white', border: 'none', borderRadius: '4px' }}
     onClick={handleLogout}
@@ -96,6 +114,9 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
      <span style={{ marginLeft: '8px' }}>Logout</span>
   </button>
 </div>
+
+
+
 
         </Sider>
         <Layout className="h-screen">

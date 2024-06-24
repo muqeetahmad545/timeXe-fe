@@ -5,6 +5,18 @@ import { LeaveModal } from "./LeaveModal";
 import { fetchAllLeaveApplicationsUser } from "../../../services/leaveApplication/leaveApplication";
 
 import { format } from "date-fns";
+const getStatusColor = (status: string): string => {
+  switch (status) {
+    case "Approved":
+      return "green";
+    case "Rejected":
+      return "red"; 
+      case "Pending":
+      return "gray";
+    default:
+      return "gray";
+  }
+};
 const columns = [
   {
     title: "Date",
@@ -28,12 +40,25 @@ const columns = [
     title: "Leave Type",
     dataIndex: "leaveType",
     key: "leaveType",
-  },
+  },  
   {
     title: "Application Status",
-    dataIndex: "leaveStatus",
+    dataIndex: ["leaveStatus"],
     key: "leaveStatus",
-  },   
+    render: (status: string) => (
+      <span
+        style={{
+          backgroundColor: getStatusColor(status),
+          color: "white",
+          padding: "4px 8px",
+          borderRadius: "4px",
+          display: "inline-block",
+        }}
+      >
+        {status}
+      </span>
+    ),
+  },
   {
     title: "Reason",
     dataIndex: "reason",
@@ -66,6 +91,8 @@ export const LeaApp: React.FC = () => {
     };
     getData();
   }, []);
+
+
   if (loading) {
     return (
       <Row justify="center" align="middle" style={{ height: '100vh' }}>

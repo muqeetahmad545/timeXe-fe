@@ -252,8 +252,8 @@ export const Profile = () => {
               </Avatar>
               <div>
                 <Title level={5}>
-                  {attendanceData?.filter((item) => item.status === "Present")
-                    .length || 0}
+                  {/* {attendanceData?.filter((item) => item.status === "Present")
+                    .length || 0} */}
                 </Title>
                 <span>Total Paresnt</span>
               </div>
@@ -266,8 +266,8 @@ export const Profile = () => {
               </Avatar>
               <div>
                 <Title level={5}>
-                  {attendanceData?.filter((item) => item.status === "Absent")
-                    .length || 0}
+                  {/* {attendanceData?.filter((item) => item.status === "Absent")
+                    .length || 0} */}
                 </Title>
                 <span>Total Absents</span>
               </div>

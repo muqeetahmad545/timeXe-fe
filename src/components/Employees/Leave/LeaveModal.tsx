@@ -76,7 +76,7 @@ export const LeaveModal: React.FC = () => {
         title="Leave Request"
         visible={isModalOpen}
         onCancel={handleCancel}
-        className="!w-[70%]"
+        className="!w-[40%]"
         confirmLoading={loading}
         footer={[
           <Button key="cancel" onClick={handleCancel}>

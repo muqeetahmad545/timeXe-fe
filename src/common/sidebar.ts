@@ -50,18 +50,18 @@ export const adminSidebar = [
     label: "Attendence Report",
     path: "attendence-report",
   },
-  {
-    key: "5",
-    icon: FieldTimeOutlined,
-    label: "Daily Report",
-    path: "daily-report",
-  },
-  {
-    key: "6",
-    icon: UserOutlined,
-    label: "User Report",
-    path: "user-report",
-  },
+  // {
+  //   key: "5",
+  //   icon: FieldTimeOutlined,
+  //   label: "Daily Report",
+  //   path: "daily-report",
+  // },
+  // {
+  //   key: "6",
+  //   icon: UserOutlined,
+  //   label: "User Report",
+  //   path: "user-report",
+  // },
   {
     key: "7",
     icon: UploadOutlined,

@@ -21,7 +21,10 @@ import { createUser, updateUser } from "../../../services/userApis/userApis";
 import { User, UserData } from "../../types";
 import { EditOutlined, UploadOutlined, UserOutlined } from "@ant-design/icons";
 import "./AddUserModel.css";
-import Dropzone from "react-dropzone";
+// import Dropzone from "react-dropzone";
+// import Dropzone, { DropzoneState, FileRejection } from 'react-dropzone';
+import Dropzone, { DropzoneState, FileRejection, DropEvent } from 'react-dropzone';
+
 
 const { Title } = Typography;
 
@@ -64,6 +67,8 @@ const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
 
+
+
 export const AddUserModal: React.FC = () => {
   const [form] = Form.useForm();
   const location = useLocation();
@@ -75,27 +80,53 @@ export const AddUserModal: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [files, setFiles] = useState([]);
+  const [file, setFile] = useState<File | null>(null);
+
+
+  const handleDrop = (acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => {
+    if (acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+    } else {
+      console.log('File rejected:', fileRejections);
+    }
+  };
+  // const [isEditing, setIsEditing] = useState(false); 
 
   const showModal = () => {
     setIsModalOpen(true);
+    setIsEditing(true); 
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setLoading(true);
+    setIsEditing(false);
   };
 
+  // useEffect(() => {
+  //   if (user) {
+  //     console.log("user", user);
+  //     form.setFieldsValue({
+  //       ...user.userDetail,
+  //       ...user.jobDetail,
+  //       ...user.signInDetail,
+  //       password: "",
+  //       confirmPassword: "",
+  //     });
+  //   }
+  // }, [user, form]);
+
   useEffect(() => {
-    if (user) {
-      console.log("user", user);
+    if (user && isEditing) {
       form.setFieldsValue({
         ...user.userDetail,
         ...user.jobDetail,
         ...user.signInDetail,
-        password: "",
+        password: "", // Clear password fields when editing
         confirmPassword: "",
       });
     }
-  }, [user, form]);
+  }, [user, form, isEditing]);
 
   const onFinish = async (values: any) => {
     setLoading(true);
@@ -135,22 +166,45 @@ export const AddUserModal: React.FC = () => {
       },
     };
 
-    try {
-      await attendanceAPI.post(
-        `${process.env.REACT_APP_API_URL}/users`,
-        payload
-      );
+  
+
+  //   try {
+  //     await attendanceAPI.post(
+  //       `${process.env.REACT_APP_API_URL}/users`,
+  //       payload
+  //     );
+  //     message.success("User created successfully");
+  //     form.resetFields();
+  //     setLoading(true);
+  //     setIsModalOpen(false);
+  //   } catch (error) {
+  //     console.error("Failed to create user:", error);
+  //     setError("Failed to create user. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  try {
+    if (isEditing) {
+      // Perform update logic
+      // Replace with your update API call
+      await updateUser(user?._id!, payload); // Example updateUser function
+      message.success("User updated successfully");
+    } else {
+      // Perform create logic
+      await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
       message.success("User created successfully");
-      form.resetFields();
-      setLoading(true);
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Failed to create user:", error);
-      setError("Failed to create user. Please try again.");
-    } finally {
-      setLoading(false);
     }
-  };
+    form.resetFields();
+    setIsModalOpen(false);
+  } catch (error) {
+    console.error("Failed to submit form:", error);
+    setError("Failed to submit form. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div>
@@ -164,7 +218,7 @@ export const AddUserModal: React.FC = () => {
         </Button>
       </div>
       <Modal
-        title="New Employee"
+        title={isEditing ? "Edit Employee" : "New Employee"}
         visible={isModalOpen}
         onCancel={handleCancel}
         className="!w-[70%]"
@@ -264,11 +318,11 @@ export const AddUserModal: React.FC = () => {
                           },
                         ]}
                       >
-                        <Input placeholder="Enter full name" />
-                      </Form.Item>
+                        <Input placeholder="Enter full name" readOnly={!isEditing} />
+                        </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="Father Name" name="fatherName">
+                      <Form.Item label="Father Name" name="fatherName"> 
                         <Input placeholder="Enter father name" />
                       </Form.Item>
                     </Col>
@@ -395,8 +449,9 @@ export const AddUserModal: React.FC = () => {
                           defaultValue="Select Gender"
                           onChange={handleChange}
                           options={[
-                            { value: "Male", label: "Male" },
-                            { value: "Female", label: "Female" },
+                            { value: "Full Time", label: "Full Time" },
+                            { value: "Part Time", label: "Part Time" },
+                            { value: "Remote", label: "Remote" },
                           ]}
                         />
                       </Form.Item>
@@ -498,35 +553,46 @@ export const AddUserModal: React.FC = () => {
                   </Col>
                   </Row> */}
 
-                  <Row gutter={[20, 0]}>
-                    <Col xs={24} sm={12}>
-                      <Form.Item label="Skills" name="skills">
-                        <Input placeholder="Enter skills" />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={12}>
-                      <Form.Item label="Files" name="dropZone">
-                        <Dropzone>
-                          {({ getRootProps, getInputProps }) => (
-                            <div
-                              {...getRootProps()}
-                              style={{
-                                border: "2px dashed #0087F7",
-                                borderRadius: "5px",
-                                padding: "2px",
-                                cursor: "pointer",
-                              }}
-                            >
-                              <input {...getInputProps()} />
-                              <p>
-                                Drag & drop files here, or click to select files
-                              </p>
-                            </div>
-                          )}
-                        </Dropzone>
-                      </Form.Item>
-                    </Col>
-                  </Row>
+<Row gutter={[20, 0]}>
+      {/* Optionally, uncomment and modify other columns as needed */}
+      {/* <Col xs={24} sm={12}>
+        <Form.Item label="Skills" name="skills">
+          <Input placeholder="Enter skills" />
+        </Form.Item>
+      </Col> */}
+      <Col xs={24} sm={12}>
+        <Form.Item label="Files" name="dropZone">
+        <Dropzone onDrop={handleDrop}>
+      {({ getRootProps, getInputProps }: DropzoneState) => (
+        <div
+          {...getRootProps()}
+          style={{
+            border: "2px dashed #0087F7",
+            borderRadius: "5px",
+            padding: "20px",
+            cursor: "pointer",
+            height: "150px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <input {...getInputProps()} />
+          {file ? (
+            <p>
+              File name: {file.name} ({file.size} bytes)
+            </p>
+          ) : (
+            <p>
+              Drag & drop files here, or click to select files
+            </p>
+          )}
+        </div>
+      )}
+    </Dropzone>
+        </Form.Item>
+      </Col>
+    </Row>
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}></Col>
                   </Row>

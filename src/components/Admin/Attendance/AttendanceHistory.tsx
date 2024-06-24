@@ -458,12 +458,12 @@ export const AttendanceHistory: React.FC = () => {
             }}
             style={{ marginRight: "10px" }}
           />
-          <Search
+          {/* <Search
             placeholder="Search by name"
             allowClear
             onSearch={(value) => setSearchName(value)}
             style={{ width: 200, margin: "0" }}
-          />
+          /> */}
         </div>
       </div>
       <Divider />

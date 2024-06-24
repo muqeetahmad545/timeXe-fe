@@ -1,10 +1,19 @@
+
 // import React, { useEffect, useState } from "react";
-// import { Divider, Table, Row, Col, Spin, Typography, message } from "antd";
+// import {
+//   Divider,
+//   Table,
+//   Row,
+//   Col,
+//   Spin,
+//   Typography,
+//   message,
+//   Modal,
+// } from "antd";
 // import { User } from "../../types";
 // import {
 //   fetchUsers,
 //   deleteUser,
-//   updateUser,
 //   updateStatus,
 // } from "../../../services/userApis/userApis";
 // import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -13,7 +22,7 @@
 // import Search from "antd/es/input/Search";
 // import { AddUserModal } from "./AddUserModal";
 // import { FaUserAltSlash } from "react-icons/fa";
-// FaUserAltSlash;
+
 // const { Title } = Typography;
 
 // export const Employees: React.FC = () => {
@@ -22,47 +31,41 @@
 //   const [searchName, setSearchName] = useState<string>("");
 //   const [editingUser, setEditingUser] = useState<User | null>(null);
 //   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [isReadOnlyModalOpen, setIsReadOnlyModalOpen] = useState(false);
+//   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-//   interface AddUserModalProps {
-//     user: User | null;
-//     isEditing: boolean;
-//     isModalOpen: boolean;
-//     onUpdate: (userId: string, updatedUser: User) => Promise<void>;
-//     onClose: () => void;
-//     setIsModalOpen: (isOpen: boolean) => void;
-//   }
-
+//   const handleRowClick = (record: User) => {
+//     setSelectedUser(record);
+//     setIsReadOnlyModalOpen(true);
+//   };
 //   const navigate = useNavigate();
+
+
 //   useEffect(() => {
 //     const fetchUsersData = async () => {
+//       setLoading(true);
 //       try {
 //         const usersData = await fetchUsers();
-//         console.log("usersData", usersData);
 //         setUsers(usersData);
 //       } catch (error) {
-//         console.error(error);
+//         console.error("Error fetching users:", error);
 //       } finally {
-//         setLoading(false);
+//         setLoading(false); 
 //       }
 //     };
-//     setLoading(true);
+
 //     fetchUsersData();
 //   }, []);
 
-// if (loading) {
-//   return (
-//     <Row justify="center" align="middle" style={{ height: "100vh" }}>
-//       <Col>
-//         <Spin size="large" />
-//       </Col>
-//     </Row>
-//   );
-// }
-
-//   // const filteredUsers = users.filter((record) => {
-//   //   const fullName = `${record.firstName} ${record.lastName}`.toLowerCase();
-//   //   return fullName.includes(searchName.toLowerCase());
-//   // });
+//   if (loading) {
+//     return (
+//       <Row justify="center" align="middle" style={{ height: "100vh" }}>
+//         <Col>
+//           <Spin size="large" />
+//         </Col>
+//       </Row>
+//     );
+//   }
 
 //   const handleDelete = async (userId: string) => {
 //     try {
@@ -75,39 +78,47 @@
 //     }
 //   };
 
-//   const onStatusClick = (userId: string) => {
-//     handleStatusUpdate(userId);
-//   };
-
 //   const handleStatusUpdate = async (userId: string) => {
 //     try {
-//       // await updateStatus(userId, { status: "Inactive" });
-//       await updateStatus(userId, { jobDetail: { status: "Inactive" } });
-//       setUsers((users) =>
-//         users.map((user) =>
-//           user._id === userId
-//             ? { ...user, jobDetail: { ...user.jobDetail, status: "Inactive" } }
-//             : user
-//         )
-//       );
-//       message.success("User status updated successfully");
+//       const userToUpdate = users.find((user) => user._id === userId);
+//       if (!userToUpdate) {
+//         throw new Error(`User with ID ${userId} not found`);
+//       }
+//       const newStatus =
+//         userToUpdate.jobDetail.status === "Active" ? "Inactive" : "Active";
+
+//       Modal.confirm({
+//         title: "Confirm Status Change",
+//         content: `Are you sure you want to set user status to "${newStatus}"?`,
+//         centered: true,
+//         onOk: async () => {
+//           const updatedJobDetail = {
+//             ...userToUpdate.jobDetail,
+//             status: newStatus,
+//           };
+//           const updatedUser: User = {
+//             ...userToUpdate,
+//             jobDetail: updatedJobDetail,
+//           };
+//           await updateStatus(userId, updatedUser);
+//           setUsers((users) =>
+//             users.map((user) => (user._id === userId ? updatedUser : user))
+//           );
+//           console.log("updatedUser",updatedUser)
+//           message.success(`User status updated to ${newStatus} successfully`);
+//         },
+//         onCancel: () => {
+//           message.info("Status update canceled");
+//         },
+//       });
 //     } catch (error) {
-//       console.error("Error updating user:", error);
+//       console.error("Error updating user status:", error);
 //       message.error("Failed to update user status");
 //     }
 //   };
-
-//   // const handleUpdate = async (userId: string, updatedUser: User) => {
-//   //   console.log("Updating user:", userId, updatedUser);
-//   //   try {
-//   //     await updateUser(userId, updatedUser);
-//   //     console.log("User updated successfully");
-//   //     setUsers(users.map((user) => (user._id === userId ? updatedUser : user)));
-//   //     message.success("User updated successfully");
-//   //   } catch (error) {
-//   //     console.error("Error updating user:", error);
-//   //     message.error("Failed to update user");
-//   //   }
+//   // const handleEdit = (record: User) => {
+//   //   setEditingUser(record);
+//   //   setIsModalOpen(true);
 //   // };
 
 //   const handleEdit = (record: User) => {
@@ -115,20 +126,17 @@
 //     setIsModalOpen(true);
 //   };
 
-//   const handleAdd = () => {
-//     setEditingUser(null);
-//     setIsModalOpen(true);
-//   };
 //   const getStatusColor = (status: string): string => {
 //     switch (status) {
 //       case "Active":
 //         return "green";
-//       case "InActive":
+//       case "Inactive":
 //         return "red";
 //       default:
 //         return "gray";
 //     }
 //   };
+
 //   const columns = [
 //     {
 //       title: "Employee ID",
@@ -163,7 +171,6 @@
 //     {
 //       title: "Status",
 //       dataIndex: ["jobDetail", "status"],
-
 //       key: "status",
 //       render: (status: string) => (
 //         <span
@@ -187,37 +194,46 @@
 //     },
 //     {
 //       title: "Action",
-//       dataIndex: "action",
 //       key: "action",
 //       render: (text: any, record: User) => (
-//         <span>
-//           <EditOutlined
-//             style={{ marginRight: 8 }}
+//         <span style={{ display: "flex", alignItems: "center" }}>
+//           {/* <EditOutlined
+//             style={{ fontSize: 20, marginRight: 8, cursor: "pointer" }}
 //             onClick={() => handleEdit(record)}
-//           />
-//           <DeleteOutlined
-//             style={{ marginRight: 8 }}
-//             onClick={() => handleStatusUpdate(record)}
+//           /> */}
+//           <FaUserAltSlash
+//             style={{ fontSize: 20, color: "red", cursor: "pointer" }}
+//             onClick={() => handleStatusUpdate(record._id)}
 //           />
 //         </span>
 //       ),
 //     },
 //   ];
 
+//   const handleSearch = (value: string) => {
+//     setSearchName(value.trim().toLowerCase());
+//   };
+
+//   const filteredUsers = users.filter((user) =>
+//     `${user.userDetail.fullName}`
+//       .toLowerCase()
+//       .includes(searchName.toLowerCase())
+//   );
+
 //   return (
-//     <div>
+//   <div>
 //       <div className="flex justify-between bg-slate-200 p-1 rounded-md w-full">
 //         <div className="border-l-4 border-secondary-color h-9 flex items-center">
 //           <Title level={5} className="ml-2">
-//             Employee
+//             Employees
 //           </Title>
 //         </div>
-//         <Row justify="space-between" align="middle" className="">
+//         <Row justify="space-between" align="middle">
 //           <Col>
 //             <Search
 //               placeholder="Search by name"
 //               allowClear
-//               onSearch={(value) => setSearchName(value)}
+//               onSearch={handleSearch}
 //               style={{ width: 200 }}
 //             />
 //           </Col>
@@ -227,10 +243,49 @@
 //         </Row>
 //       </div>
 //       <Divider />
-//       <Table dataSource={filteredUsers} columns={columns} />
+//       <Table
+//         dataSource={filteredUsers}
+//         columns={columns}
+//         onRow={(record) => ({
+//           onClick: () => handleRowClick(record),
+//         })}
+//       />
+//       <Modal
+//         title="User Details"
+//         visible={isReadOnlyModalOpen}
+//         onCancel={() => setIsReadOnlyModalOpen(false)}
+//         footer={[
+//           // <EditOutlined
+//           //   key="edit"
+//           //   style={{ fontSize: 20, cursor: "pointer" }}
+//           //   onClick={() => handleEdit(selectedUser as User)}
+//           // />,
+//         ]}
+//       >
+//         {selectedUser && (
+//           <div>
+//             <p><strong>Employee ID:</strong> {selectedUser.jobDetail.employeeId}</p>
+//             <p><strong>Name:</strong> {selectedUser.signInDetail.userName}</p>
+//             <p><strong>Email:</strong> {selectedUser.signInDetail.signInEmail}</p>
+//             <p><strong>Role:</strong> {selectedUser.jobDetail.role}</p>
+//             <p><strong>Designation:</strong> {selectedUser.jobDetail.designation}</p>
+//             <p><strong>CNIC:</strong> {selectedUser.userDetail.cnic}</p>
+//             <p><strong>Status:</strong> {selectedUser.jobDetail.status}</p>
+//             <p><strong>Joining Date:</strong> {moment(selectedUser.jobDetail.joiningDate).format("MMMM Do YYYY")}</p>
+//           </div>
+//         )}
+//       </Modal>
+//       {/* {editingUser && (
+//         <AddUserModal
+//           visible={isModalOpen}
+//           onCancel={() => setIsModalOpen(false)}
+//           user={editingUser}
+//         />
+//       )} */}
 //     </div>
 //   );
 // };
+
 
 import React, { useEffect, useState } from "react";
 import {
@@ -264,34 +319,25 @@ export const Employees: React.FC = () => {
   const [searchName, setSearchName] = useState<string>("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReadOnlyModalOpen, setIsReadOnlyModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+  const handleRowClick = (record: User) => {
+    setSelectedUser(record);
+    setIsReadOnlyModalOpen(true);
+  };
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const fetchUsersData = async () => {
-  //     try {
-  //       const usersData = await fetchUsers();
-  //       setUsers(usersData);
-  //     } catch (error) {
-  //       console.error("Error fetching users:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchUsersData();
-  // }, []);
 
   useEffect(() => {
     const fetchUsersData = async () => {
-      setLoading(true); // Set loading to true before fetching data
+      setLoading(true);
       try {
         const usersData = await fetchUsers();
         setUsers(usersData);
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
-        setLoading(false); // Always set loading to false after fetch operation
+        setLoading(false); 
       }
     };
 
@@ -345,6 +391,7 @@ export const Employees: React.FC = () => {
           setUsers((users) =>
             users.map((user) => (user._id === userId ? updatedUser : user))
           );
+          console.log("updatedUser",updatedUser)
           message.success(`User status updated to ${newStatus} successfully`);
         },
         onCancel: () => {
@@ -356,6 +403,7 @@ export const Employees: React.FC = () => {
       message.error("Failed to update user status");
     }
   };
+
   const handleEdit = (record: User) => {
     setEditingUser(record);
     setIsModalOpen(true);
@@ -432,10 +480,6 @@ export const Employees: React.FC = () => {
       key: "action",
       render: (text: any, record: User) => (
         <span style={{ display: "flex", alignItems: "center" }}>
-          <EditOutlined
-            style={{ fontSize: 20, marginRight: 8, cursor: "pointer" }}
-            onClick={() => handleEdit(record)}
-          />
           <FaUserAltSlash
             style={{ fontSize: 20, color: "red", cursor: "pointer" }}
             onClick={() => handleStatusUpdate(record._id)}
@@ -445,15 +489,23 @@ export const Employees: React.FC = () => {
     },
   ];
 
-  const handleSearch = (value: string) => {
-    setSearchName(value.trim().toLowerCase());
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchName(event.target.value.trim().toLowerCase());
   };
 
-  const filteredUsers = users.filter((user) =>
-    `${user.userDetail.fullName}`
-      .toLowerCase()
-      .includes(searchName.toLowerCase())
-  );
+  const filteredUsers = users.filter((user) => {
+    const { jobDetail, signInDetail, userDetail } = user;
+    return (
+      // jobDetail.employeeId.toLowerCase().includes(searchName) ||
+      signInDetail.userName.toLowerCase().includes(searchName) ||
+      signInDetail.signInEmail.toLowerCase().includes(searchName) ||
+      jobDetail.role.toLowerCase().includes(searchName) ||
+      jobDetail.designation.toLowerCase().includes(searchName) ||
+      userDetail.cnic.toLowerCase().includes(searchName) ||
+      jobDetail.status.toLowerCase().includes(searchName) ||
+      moment(jobDetail.joiningDate).format("MMMM Do YYYY").toLowerCase().includes(searchName)
+    );
+  });
 
   return (
     <div>
@@ -466,9 +518,9 @@ export const Employees: React.FC = () => {
         <Row justify="space-between" align="middle">
           <Col>
             <Search
-              placeholder="Search by name"
+              placeholder="Search"
               allowClear
-              onSearch={handleSearch}
+              onChange={handleSearch}
               style={{ width: 200 }}
             />
           </Col>
@@ -478,7 +530,39 @@ export const Employees: React.FC = () => {
         </Row>
       </div>
       <Divider />
-      <Table dataSource={filteredUsers} columns={columns} />
+      <Table
+        dataSource={filteredUsers}
+        columns={columns}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
+      />
+      <Modal
+        title="User Details"
+        visible={isReadOnlyModalOpen}
+        onCancel={() => setIsReadOnlyModalOpen(false)}
+        footer={[]}
+      >
+        {selectedUser && (
+          <div>
+            <p><strong>Employee ID:</strong> {selectedUser.jobDetail.employeeId}</p>
+            <p><strong>Name:</strong> {selectedUser.signInDetail.userName}</p>
+            <p><strong>Email:</strong> {selectedUser.signInDetail.signInEmail}</p>
+            <p><strong>Role:</strong> {selectedUser.jobDetail.role}</p>
+            <p><strong>Designation:</strong> {selectedUser.jobDetail.designation}</p>
+            <p><strong>CNIC:</strong> {selectedUser.userDetail.cnic}</p>
+            <p><strong>Status:</strong> {selectedUser.jobDetail.status}</p>
+            <p><strong>Joining Date:</strong> {moment(selectedUser.jobDetail.joiningDate).format("MMMM Do YYYY")}</p>
+          </div>
+        )}
+      </Modal>
+      {/* {editingUser && (
+        <AddUserModal
+          visible={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          user={editingUser}
+        />
+      )} */}
     </div>
   );
 };

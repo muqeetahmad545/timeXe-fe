@@ -9,13 +9,16 @@ const { Title } = Typography;
 
 const convertToHHMMSS = (decimalHours: number): string => {
   if (isNaN(decimalHours)) {
-    return 'N/A';
+    return "N/A";
   }
   const totalSeconds = Math.floor(decimalHours * 3600);
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}:${String(seconds).padStart(2, "0")}`;
 };
 
 export const UserReport: React.FC = () => {
@@ -23,7 +26,8 @@ export const UserReport: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string>("Select a user name");
+  const [selectedUser, setSelectedUser] =
+    useState<string>("Select a user name");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,16 +51,20 @@ export const UserReport: React.FC = () => {
     setSelectedUser(value);
   };
 
-  const filteredAttendanceData = selectedUser === "Select a user name" ? attendanceData : attendanceData.filter(record => record.userName === selectedUser);
-  const uniqueUserNames = [...new Set(attendanceData.map(record => record.userName))];
-
+  const filteredAttendanceData =
+    selectedUser === "Select a user name"
+      ? attendanceData
+      : attendanceData.filter((record) => record.userName === selectedUser);
+  const uniqueUserNames = [
+    ...new Set(attendanceData.map((record) => record.userName)),
+  ];
 
   const columns = [
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
-      render: (date: string) => format(new Date(date), 'PPP'),
+      render: (date: string) => format(new Date(date), "PPP"),
     },
     {
       title: "Name",
@@ -67,7 +75,7 @@ export const UserReport: React.FC = () => {
       title: "CheckedIn",
       dataIndex: "time_in",
       key: "time_in",
-      render: (time_in: string) => format(new Date(time_in), 'hh:mm a'),
+      render: (time_in: string) => format(new Date(time_in), "hh:mm a"),
     },
     {
       title: "CheckedOut",
@@ -75,19 +83,19 @@ export const UserReport: React.FC = () => {
       key: "time_out",
       render: (time_out: string) => {
         if (!time_out || isNaN(Date.parse(time_out))) {
-          return 'N/A'; 
+          return "N/A";
         }
-        return format(new Date(time_out), 'hh:mm a');
+        return format(new Date(time_out), "hh:mm a");
       },
     },
     {
       title: "Designation",
       dataIndex: "designation",
       key: "designation",
-      render: (_: any, record: any) => {
-        const user = users.find((user) => user._id === record.user);
-        return user ? `${user.designation}` : '';
-      }, 
+      // render: (_: any, record: any) => {
+      //   const user = users.find((user) => user._id === record.user);
+      //   return user ? `${user.designation}` : '';
+      // },
     },
     {
       title: "Status",
@@ -104,7 +112,7 @@ export const UserReport: React.FC = () => {
 
   if (loading) {
     return (
-      <Row justify="center" align="middle" style={{ height: '100vh' }}>
+      <Row justify="center" align="middle" style={{ height: "100vh" }}>
         <Col>
           <Spin size="large" />
         </Col>
@@ -125,24 +133,27 @@ export const UserReport: React.FC = () => {
           </Title>
         </div>
       </div>
-      <Row justify="space-between" align="middle" style={{ margin:10 }}>
+      <Row justify="space-between" align="middle" style={{ margin: 10 }}>
         <Col span={24}>
-        <Select
+          <Select
             value={selectedUser}
             onChange={handleUserChange}
             placeholder="Select User Name"
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
           >
-            {uniqueUserNames.map(userName => (
+            {uniqueUserNames.map((userName) => (
               <Select.Option key={userName} value={userName}>
                 {userName}
               </Select.Option>
             ))}
           </Select>
-
         </Col>
       </Row>
-      <Table dataSource={filteredAttendanceData} columns={columns} rowKey="_id" />
+      <Table
+        dataSource={filteredAttendanceData}
+        columns={columns}
+        rowKey="_id"
+      />
     </div>
   );
 };

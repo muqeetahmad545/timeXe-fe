@@ -21,7 +21,7 @@ export const Profile = () => {
     const fetchData = async () => {
       const userData = await fetchUserData();
       setUserData(userData);
-      console.log("userData", userData);
+      console.log("userData", userData?.signInDetail.userName);
     };
 
     fetchData();
@@ -93,7 +93,25 @@ export const Profile = () => {
 
   const totalAttendance = attendanceData.length;
   const totalLeaves = userData && Array.isArray(userData) ? userData : 0;
+
+  const getStatusColor = (status: string): string => {
+    switch (status) {
+      case "Present":
+        return "green";
+      case "Absent":
+        return "red";
+      case "Leave":
+        return "yellow";
+      default:
+        return "gray";
+    }
+  };
   const columns = [
+    {
+      title: "Employee ID",
+      dataIndex: ["jobDetail", "employeeId"],
+      key: "employeeId",
+    },
     {
       title: "Date",
       dataIndex: "date",
@@ -121,6 +139,19 @@ export const Profile = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      render: (status: string) => (
+        <span
+          style={{
+            backgroundColor: getStatusColor(status),
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            display: "inline-block",
+          }}
+        >
+          {status}
+        </span>
+      ),
     },
     {
       title: "Working Hours",
@@ -153,39 +184,38 @@ export const Profile = () => {
                 : ""} */}
             </Title>
             <Row className="w-full flex text-slate-400 font-semibold space-x-36">
-            <div className="grid mx-4">
-  <span className="text-black">Role</span>
-  <span>{userData?.jobDetail?.role}</span>
-</div>
-<div className="grid mx-4">
-  <span className="text-black">Designation</span>
-  <span>{userData?.jobDetail?.designation}</span>
-</div>
-<div className="grid mx-4">
-  <span className="text-black">Email Address</span>
-  <span>{userData?.userDetail?.email}</span>
-</div>
-<div className="grid mx-4">
-  <span className="text-black">CNIC</span>
-  <span>{userData?.userDetail?.cnic}</span>
-</div>
-<div className="grid mx-4">
-  <span className="text-black">DOB</span>
-  <span>
-    {userData?.userDetail?.dob
-      ? format(new Date(userData?.userDetail?.dob), "PPP")
-      : "N/A"}
-  </span>
-</div>
-<div className="grid mx-4">
-  <span className="text-black">Joining Date</span>
-  <span>
-    {userData?.jobDetail?.joiningDate
-      ? format(new Date(userData?.jobDetail?.joiningDate), "PPP")
-      : "N/A"}
-  </span>
-</div>
-
+              <div className="grid mx-4">
+                <span className="text-black">Role</span>
+                <span>{userData?.jobDetail?.role}</span>
+              </div>
+              <div className="grid mx-4">
+                <span className="text-black">Designation</span>
+                <span>{userData?.jobDetail?.designation}</span>
+              </div>
+              <div className="grid mx-4">
+                <span className="text-black">Email Address</span>
+                <span>{userData?.userDetail?.email}</span>
+              </div>
+              <div className="grid mx-4">
+                <span className="text-black">CNIC</span>
+                <span>{userData?.userDetail?.cnic}</span>
+              </div>
+              <div className="grid mx-4">
+                <span className="text-black">DOB</span>
+                <span>
+                  {userData?.userDetail?.dob
+                    ? format(new Date(userData?.userDetail?.dob), "PPP")
+                    : "N/A"}
+                </span>
+              </div>
+              <div className="grid mx-4">
+                <span className="text-black">Joining Date</span>
+                <span>
+                  {userData?.jobDetail?.joiningDate
+                    ? format(new Date(userData?.jobDetail?.joiningDate), "PPP")
+                    : "N/A"}
+                </span>
+              </div>
             </Row>
           </div>
         </div>

@@ -29,13 +29,6 @@ export const employeeSidebar = [
     label: "Leave Applications",
     path: "leave-applications",
   },
-  // {
-  //   key: "4",
-  //   icon: LogoutOutlined,
-  //   label: "Logout",
-  //   path: "/",
-  //   onClick: () => {},
-  // },
 ];
 
 export const adminSidebar = [
@@ -45,12 +38,6 @@ export const adminSidebar = [
     label: "Dashboard",
     path: "/dashboard",
   },
-  // {
-  //   key: "2",
-  //   icon: UsergroupAddOutlined,
-  //   label: "Add Employee",
-  //   path: "add-employee",
-  // },
   {
     key: "3",
     icon: UserSwitchOutlined,
@@ -81,11 +68,4 @@ export const adminSidebar = [
     label: "Leave Applications",
     path: "leave-applications",
   },
-  // {
-  //   key: "8",
-  //   icon: LogoutOutlined,
-  //   label: "Logout",
-  //   path: "/",
-  //   onClick: () => {},
-  // },
 ];

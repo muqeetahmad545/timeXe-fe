@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import {
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AppHeader } from "../components/Admin/Dashboard/AppHeader";
 import { adminSidebar, employeeSidebar } from "./sidebar";
 import { fetchUserData } from "../services/userApis/userApis";
-
-
-
 const { Header, Sider, Content } = Layout;
 
 const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
@@ -23,14 +24,18 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("firstName");
     localStorage.clear();
-    navigate('/'); 
+    navigate("/");
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchUserData();
-        if (response && response.jobDetail && response.jobDetail.role !== undefined) {
+        if (
+          response &&
+          response.jobDetail &&
+          response.jobDetail.role !== undefined
+        ) {
           setUserRole(response.jobDetail.role);
         } else {
           setUserRole("");
@@ -39,50 +44,34 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         console.error("Error fetching user data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetchUserData();
-  //       if (response && response.role !== undefined) {
-  //         setUserRole(response.role);
-  //       } else {
-  //         setUserRole("");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching user data:", error);
-  //     }
-  //   };
 
-  //   fetchData();
-  // }, []);
   const role = userRole === "admin" ? adminSidebar : employeeSidebar;
 
   return (
     <Layout>
- <Header style={{ padding: 0, display: "flex" }}>
-  <Button
-    type="text"
-    icon={
-      collapsed ? (
-        <MenuUnfoldOutlined style={{ color: "white" }} />
-      ) : (
-        <MenuFoldOutlined style={{ color: "white" }} />
-      )
-    }
-    onClick={() => setCollapsed(!collapsed)}
-    style={{
-      fontSize: "16px",
-      width: 64,
-      height: 64,
-      backgroundColor: "#001529",
-    }}
-  />
-  <AppHeader />
-</Header>
+      <Header style={{ padding: 0, display: "flex" }}>
+        <Button
+          type="text"
+          icon={
+            collapsed ? (
+              <MenuUnfoldOutlined style={{ color: "white" }} />
+            ) : (
+              <MenuFoldOutlined style={{ color: "white" }} />
+            )
+          }
+          onClick={() => setCollapsed(!collapsed)}
+          style={{
+            fontSize: "16px",
+            width: 64,
+            height: 64,
+            backgroundColor: "#001529",
+          }}
+        />
+        <AppHeader />
+      </Header>
 
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -95,29 +84,40 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
               key: menuitem.key,
               icon: <menuitem.icon />,
               label: menuitem.label,
-              onClick: () =>{
-                navigate(menuitem.path)
-                if (menuitem.label === 'Logout') {
+              onClick: () => {
+                navigate(menuitem.path);
+                if (menuitem.label === "Logout") {
                   localStorage.removeItem("token");
                   localStorage.removeItem("firstName");
-                  localStorage.clear()
+                  localStorage.clear();
                 }
               },
             }))}
           />
-<div style={{ position: 'absolute', bottom: 70, width: '100%', padding: '16px', marginLeft:"20px" }}>
-  <button
-    style={{ display: 'flex', alignItems: 'center', width: '100%',  color: 'white', border: 'none', borderRadius: '4px' }}
-    onClick={handleLogout}
-  >
-    <LogoutOutlined style={{ marginRight: '8px'  }} />
-     <span style={{ marginLeft: '8px' }}>Logout</span>
-  </button>
-</div>
-
-
-
-
+          <div
+            style={{
+              position: "absolute",
+              bottom: 70,
+              width: "100%",
+              padding: "16px",
+              marginLeft: "20px",
+            }}
+          >
+            <button
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+              }}
+              onClick={handleLogout}
+            >
+              <LogoutOutlined style={{ marginRight: "8px" }} />
+              <span style={{ marginLeft: "8px" }}>Logout</span>
+            </button>
+          </div>
         </Sider>
         <Layout className="h-screen">
           <Content
@@ -128,7 +128,7 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
               borderRadius: borderRadiusLG,
             }}
           >
-        <Outlet/>
+            <Outlet />
           </Content>
         </Layout>
       </Layout>

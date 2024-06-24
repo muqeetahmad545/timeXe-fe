@@ -1,31 +1,3 @@
-// export interface UserData {
-//   fullName: string;
-//   fatherName: string;
-//   email: string;
-//   address: string;
-//   phone: Number;
-//   companyName: string;
-//   department: string;
-//   jobPosition: string;
-//   profileImage: string;
-//   manager: string;
-//   password: string;
-//   confirmPassword: string;
-//   cnic: string;
-//   designation: string;
-//   dob: Date;
-//   joiningDate: Date;
-//   role: string;
-//   salary: string;
-//   gender: string;
-//   signInEmail: string;
-//   userName: string;
-//   dropZone:string;
-//   Skills:string;
-
-//   // joiningDate:Date;
-// }
-
 export interface UserData {
   userDetail: {
     fullName: string;
@@ -45,7 +17,7 @@ export interface UserData {
     manager: string;
     designation: string;
     joiningDate: Date;
-  role: string; 
+    role: string;
     salary: string;
     status: string;
     employeeId: number;
@@ -77,18 +49,39 @@ export interface ApiResponse<T> {
   data: T;
 }
 export interface User {
+  userDetail: {
+    fullName: string;
+    fatherName: string;
+    email: string;
+    address: string;
+    phone: number;
+    dob: Date;
+    cnic: string;
+    profileImage: string;
+    gender: string;
+  };
+  jobDetail: {
+    companyName: string;
+    department: string;
+    jobPosition: string;
+    manager: string;
+    designation: string;
+    joiningDate: Date;
+    role: string;
+    salary: string;
+    status: string;
+    employeeId: number;
+  };
+  signInDetail: {
+    userName: string;
+    signInEmail: string;
+    confirmPassword: string;
+    password: string;
+  };
   _id: string;
-  name: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  cnic: string;
-  employeeCount: number;
-  pendingLeave: number;
-  totalLeave: number;
-  totalAbsent: number;
-  designation: string;
+  createdAt: Date;
+  updatedAt: Date;
+  __v: number;
 }
 
 export interface AttendanceRecord {

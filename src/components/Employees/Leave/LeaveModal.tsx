@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Modal, Divider, DatePicker, Typography, Button, Form, Row, Col, Input, Select } from "antd";
+import {
+  Modal,
+  Divider,
+  DatePicker,
+  Typography,
+  Button,
+  Form,
+  Row,
+  Col,
+  Input,
+  Select,
+} from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import type { FormProps } from "antd";
 import { createLeaveApplication } from "../../../services/leaveApplication/leaveApplication";
@@ -12,7 +23,7 @@ export const LeaveModal: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [form] = Form.useForm(); 
+  const [form] = Form.useForm();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -28,8 +39,8 @@ export const LeaveModal: React.FC = () => {
     try {
       await createLeaveApplication(values);
       console.log("Leave application created successfully");
-      form.resetFields(); 
-      setIsModalOpen(false); 
+      form.resetFields();
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to create leave application:", error);
       setError("Failed to create leave application. Please try again.");
@@ -38,14 +49,15 @@ export const LeaveModal: React.FC = () => {
     }
   };
 
-  const onFinishFailed: FormProps<ApplicationData>["onFinishFailed"] = (errorInfo) => {
+  const onFinishFailed: FormProps<ApplicationData>["onFinishFailed"] = (
+    errorInfo
+  ) => {
     console.log("Failed:", errorInfo);
   };
   const disabledDate = (current: moment.Moment | null) => {
     // Disable past dates
-    return current && current < moment().startOf('day');
+    return current && current < moment().startOf("day");
   };
-  
 
   return (
     <div>
@@ -70,15 +82,20 @@ export const LeaveModal: React.FC = () => {
           <Button key="cancel" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={() => form.submit()} loading={loading}>
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => form.submit()}
+            loading={loading}
+          >
             Submit
           </Button>,
         ]}
       >
         <Divider className="!mt-3" />
-        {error && <div style={{ color: 'red' }}>{error}</div>}
+        {error && <div style={{ color: "red" }}>{error}</div>}
         <Form
-          form={form} // Pass the form instance to Form component
+          form={form}
           className="mt-4 w-full"
           name="basic"
           labelCol={{ span: 8 }}
@@ -91,7 +108,9 @@ export const LeaveModal: React.FC = () => {
           <Form.Item<ApplicationData>
             label="Leave Type"
             name="leaveType"
-            rules={[{ required: true, message: "Please select one of the values!" }]}
+            rules={[
+              { required: true, message: "Please select one of the values!" },
+            ]}
           >
             <Select
               placeholder="Choose Leave Type"
@@ -102,31 +121,33 @@ export const LeaveModal: React.FC = () => {
               ]}
             />
           </Form.Item>
-          <Row gutter={16}>
-            <Col span={6}>
+          <Row gutter={[16, 0]}>
+            <Col xs={24} sm={12}>
               <Form.Item<ApplicationData>
                 label="Start Date"
                 name="startDate"
                 rules={[{ required: true, message: "Please input start date" }]}
               >
-<DatePicker
-  disabledDate={(current) =>
-    current && current < moment().startOf('day')
-  }
-/>
+                <DatePicker
+                  style={{ width: "100%" }}
+                  disabledDate={(current) =>
+                    current && current < moment().startOf("day")
+                  }
+                />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col xs={24} sm={12}>
               <Form.Item<ApplicationData>
                 label="End Date"
                 name="endDate"
                 rules={[{ required: true, message: "Please input end date" }]}
               >
-<DatePicker
-  disabledDate={(current) =>
-    current && current < moment().startOf('day')
-  }
-/>
+                <DatePicker
+                  style={{ width: "100%" }}
+                  disabledDate={(current) =>
+                    current && current < moment().startOf("day")
+                  }
+                />
               </Form.Item>
             </Col>
           </Row>

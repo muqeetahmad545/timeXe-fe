@@ -33,10 +33,8 @@ export const Login = () => {
     try {
       setLoading(true);
       const user = await authLogin(values);
-
       message.success("Login successful");
       localStorage.setItem("role", user?.jobDetail?.role || "");
-
       if (user?.jobDetail?.role === "admin") {
         navigate("/dashboard");
       } else {

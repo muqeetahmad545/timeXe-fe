@@ -1,22 +1,10 @@
-import {
-  Routes,
-  Route,
-  BrowserRouter as Router,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import { Login } from "../components/Admin/Login/Login";
-import { PrivateMap } from "./PrivateMap";
-import { SitMap } from "./SitMap";
-import { useEffect, useState } from "react";
-import { fetchUserData } from "../services/userApis/userApis";
-import { UserData } from "../components/types";
-import { UserRoutes } from "./UserRoutes";
 import AppLayout from "../common/AppLayout";
 import { DashContent } from "../components/Employees/Dashboard/DashContent";
 import { Profile } from "../components/Employees/Dashboard/Profile";
 import { LeaApp } from "../components/Employees/Leave/LeaApp";
 import { AppContent } from "../components/Admin/Dashboard/AppContent";
-// import { AddUser } from "../components/Admin/User/AddUserModal";
 import { Employees } from "../components/Admin/User/Employeees";
 import { AttendanceHistory } from "../components/Admin/Attendance/AttendanceHistory";
 import { LeaAppAdmin } from "../components/Employees/Leave/LeaAppAdmin";
@@ -36,8 +24,6 @@ export const AppRoutes = () => {
 
           <Route path="/dashboard" element={<AppLayout />}>
             <Route index element={<AppContent />} />
-            {/* <Route path="add-employee" element={<AddUser />} />
-            <Route path="edit-employee/:userId" element={<AddUser />} /> */}
             <Route path="employees" element={<Employees />} />
             <Route path="attendence-report" element={<AttendanceHistory />} />
             <Route path="daily-report" element={<DailyAttendanceHistory />} />

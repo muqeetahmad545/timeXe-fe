@@ -63,6 +63,7 @@ const columns = [
     title: "Reason",
     dataIndex: "reason",
     key: "reason",
+    width: 200,
   }, 
 ];
 

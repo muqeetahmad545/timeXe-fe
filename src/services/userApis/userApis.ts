@@ -59,6 +59,26 @@ export const updateUser = async (
   }
 };
 
+// export async function uploadImage(file) {
+//   try {
+//     const formData = new FormData();
+//     formData.append("file", file);
+
+//     const response = await attendanceAPI.post(`/upload`, formData);
+
+//     if (response) {
+//       return response.url;
+//     } else {
+//       console.error("Failed to upload file");
+//       return null;
+//     }
+//   } catch (error) {
+//     console.error("Error uploading file:", error);
+//     return null;
+//   }
+// }
+
+
 export const updateStatus = async (
   userId: string,
   updateData: Partial<User>

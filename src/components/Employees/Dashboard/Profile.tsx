@@ -107,11 +107,11 @@ export const Profile = () => {
     }
   };
   const columns = [
-    {
-      title: "Employee ID",
-      dataIndex: ["jobDetail", "employeeId"],
-      key: "employeeId",
-    },
+    // {
+    //   title: "Employee ID",
+    //   dataIndex: ["jobDetail", "employeeId"],
+    //   key: "employeeId",
+    // },
     {
       title: "Date",
       dataIndex: "date",
@@ -172,16 +172,16 @@ export const Profile = () => {
         </div>
         <Divider />
         <div className="flex p-2">
-          <Avatar size={100} className="!text-5xl">
-            {/* {userData && userData.firstName && userData.lastName
-              ? userData.firstName.slice(0, 1) + userData.lastName.slice(0, 1)
-              : ""} */}
-          </Avatar>
+        <Avatar
+            alt="User Avatar"
+            src={userData?.userDetail?.profileImage || ""}
+            style={{ width: 150, height: 150 }}
+          />
           <div className="ml-10">
             <Title level={1}>
-              {/* {userData?.firstName && userData?.lastName
-                ? userData?.firstName + " " + userData?.lastName
-                : ""} */}
+              {userData?.signInDetail.userName 
+                ? userData?.signInDetail.userName
+                : ""}
             </Title>
             <Row className="w-full flex text-slate-400 font-semibold space-x-36">
               <div className="grid mx-4">
@@ -252,8 +252,8 @@ export const Profile = () => {
               </Avatar>
               <div>
                 <Title level={5}>
-                  {/* {attendanceData?.filter((item) => item.status === "Present")
-                    .length || 0} */}
+                  {attendanceData?.filter((item) => item.status === "Present")
+                    .length || 0}
                 </Title>
                 <span>Total Paresnt</span>
               </div>
@@ -266,8 +266,8 @@ export const Profile = () => {
               </Avatar>
               <div>
                 <Title level={5}>
-                  {/* {attendanceData?.filter((item) => item.status === "Absent")
-                    .length || 0} */}
+                  {attendanceData?.filter((item) => item.status === "Absent")
+                    .length || 0}
                 </Title>
                 <span>Total Absents</span>
               </div>

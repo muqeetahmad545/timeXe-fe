@@ -24,6 +24,7 @@ import "./AddUserModel.css";
 // import Dropzone from "react-dropzone";
 // import Dropzone, { DropzoneState, FileRejection } from 'react-dropzone';
 import Dropzone, { DropzoneState, FileRejection, DropEvent } from 'react-dropzone';
+import { RcFile, UploadChangeParam } from "antd/es/upload";
 
 
 const { Title } = Typography;
@@ -68,19 +69,26 @@ const handleChange = (value: string) => {
 };
 
 
+interface AddUserModalProps {
+  openModal?: boolean; // Define the prop type for editUser
+  closeModal?: () => void;
+  userData?: UserData | null;
+}
 
-export const AddUserModal: React.FC = () => {
+export const AddUserModal: React.FC<AddUserModalProps> = ({ openModal , closeModal , userData }) => {
+  
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [user, setUser] = useState<UserData | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState( openModal ? true : false);
+  const [user, setUser] = useState<UserData | null>(userData ? userData : null);
+  const [isModalOpen, setIsModalOpen] = useState(openModal ? true :false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState("");
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
 
 
   const handleDrop = (acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => {
@@ -90,17 +98,36 @@ export const AddUserModal: React.FC = () => {
       console.log('File rejected:', fileRejections);
     }
   };
-  // const [isEditing, setIsEditing] = useState(false); 
+
+  // const showModal = () => {
+  //   setIsModalOpen(true);
+  //   setIsEditing(true); 
+  // };
 
   const showModal = () => {
     setIsModalOpen(true);
-    setIsEditing(true); 
+    setIsEditing(false); // Reset to new user mode
+    form.resetFields(); // Reset form fields when modal opens
   };
 
+  // const handleCancel = () => {
+  //   setIsModalOpen(false);
+  //   setLoading(true);
+  //   setIsEditing(false);
+  // };
+
   const handleCancel = () => {
-    setIsModalOpen(false);
-    setLoading(true);
-    setIsEditing(false);
+
+    if (openModal) {
+      closeModal && closeModal();
+    }
+    else{
+
+      setIsModalOpen(false);
+      setLoading(false);
+      form.resetFields(); // Reset form fields when modal cancels
+    }
+
   };
 
   // useEffect(() => {
@@ -122,16 +149,43 @@ export const AddUserModal: React.FC = () => {
         ...user.userDetail,
         ...user.jobDetail,
         ...user.signInDetail,
-        password: "", // Clear password fields when editing
+        password: "",
         confirmPassword: "",
+        dob: user.userDetail.dob ? moment(user.userDetail.dob).format('MMMM Do YYYY') : null,
+      joiningDate: user.jobDetail.joiningDate ? moment(user.jobDetail.joiningDate).format('MMMM Do YYYY') : null,
       });
     }
   }, [user, form, isEditing]);
+console.log("user>>>>>>>>>>" , user);
 
+  
+  interface UserFormProps {
+    attendanceAPI: any;
+    form: any;
+    setIsModalOpen: (isOpen: boolean) => void;
+  }
+  
+  const handleFileChange = (info: UploadChangeParam) => {
+    const newFile = info.file.originFileObj as File | undefined;
+    if (newFile) {
+      setFile(newFile);
+    }
+  };
+
+  const handleUploadSuccess = async (info:any) => {
+    if (info.file.status === 'done') {
+      const response = info.file.response;
+      setImageUrl(response.url);
+    }
+  };
   const onFinish = async (values: any) => {
     setLoading(true);
     setError(null);
 
+    const formattedDob = values.dob ? moment(values.dob, 'MMMM Do YYYY').toDate() : null;
+    const formattedJoiningDate = values.joiningDate ? moment(values.joiningDate, 'MMMM Do YYYY').toDate() : null;
+  
+  
     const payload = {
       userDetail: {
         fullName: values.fullName,
@@ -139,9 +193,10 @@ export const AddUserModal: React.FC = () => {
         email: values.email,
         address: values.address,
         phone: values.phone,
-        dob: values.dob,
+        // dob: values.dob,
+        dob: formattedDob,
         cnic: values.cnic,
-        profileImage: values.profileImage,
+        profileImage: imageUrl,
         gender: values.gender,
       },
       jobDetail: {
@@ -150,7 +205,8 @@ export const AddUserModal: React.FC = () => {
         jobPosition: values.jobPosition,
         manager: values.manager,
         designation: values.designation,
-        joiningDate: values.joiningDate,
+        // joiningDate: values.joiningDate,
+        joiningDate: formattedJoiningDate,
         role: values.role,
         salary: values.salary,
         status: values.status,
@@ -165,10 +221,148 @@ export const AddUserModal: React.FC = () => {
         confirmPassword: values.confirmPassword,
       },
     };
-
   
+    try {
+      let response;
+      if (openModal && user) {
+        response = await attendanceAPI.patch(`${process.env.REACT_APP_API_URL}/update?userId=${user._id}`, payload);
+        message.success("User updated successfully");
+      } else {
+        response = await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
+        message.success("User created successfully");
+      }
+  
+      form.resetFields();
+      setIsModalOpen(false);
+  
+      if (openModal) {
+        closeModal && closeModal();
+      }
+    } catch (error) {
+      console.error("Failed to save user:", error);
+      setError("Failed to save user. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+//   const onFinish = async (values:any) => {
+//     setLoading(true);
+//     setError(null);
 
+//     const payload = {
+//       userDetail: {
+//         fullName: values.fullName,
+//         fatherName: values.fatherName,
+//         email: values.email,
+//         address: values.address,
+//         phone: values.phone,
+//         dob: values.dob,
+//         cnic: values.cnic,
+//         profileImage: imageUrl, 
+//         gender: values.gender,
+//       },
+//       jobDetail: {
+//         companyName: values.companyName,
+//         department: values.department,
+//         jobPosition: values.jobPosition,
+//         manager: values.manager,
+//         designation: values.designation,
+//         joiningDate: values.joiningDate,
+//         role: values.role,
+//         salary: values.salary,
+//         status: values.status,
+//         employeeId: values.employeeId,
+//         dropZone: values.dropZone,
+//         Skills: values.Skills,
+//       },
+//       signInDetail: {
+//         userName: values.userName,
+//         signInEmail: values.signInEmail,
+//         password: values.password,
+//         confirmPassword: values.confirmPassword,
+//       },
+//     };
+
+//   //   try {
+//   //     const response = await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
+//   //     message.success("User created successfully");
+//   //     form.resetFields();
+//   //     setLoading(false);
+//   //     setIsModalOpen(false);
+//   //   } catch (error) {
+//   //     console.error("Failed to create user:", error);
+//   //     setError("Failed to create user. Please try again.");
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // };
+//   try {
+//     let response;
+//     if (openModal && user) {
+//       response = await attendanceAPI.patch(`${process.env.REACT_APP_API_URL}/update?userId=${user._id}`,user);
+//       message.success("User updated successfully");
+//     } else {
+//       response = await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
+//       message.success("User created successfully");
+//     }
+
+//     form.resetFields(); 
+//     setIsModalOpen(false);
+
+//     if (openModal) {
+//       closeModal && closeModal();
+//     }
+   
+
+//   } catch (error) {
+//     console.error("Failed to save user:", error);
+//     setError("Failed to save user. Please try again.");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+  // const onFinish = async (values: any) => {
+  //   setLoading(true);
+  //   setError(null);
+
+ 
+
+  //   const payload = {
+  //     userDetail: {
+  //       fullName: values.fullName,
+  //       fatherName: values.fatherName,
+  //       email: values.email,
+  //       address: values.address,
+  //       phone: values.phone,
+  //       dob: values.dob,
+  //       cnic: values.cnic,
+  //       profileImage: values.profileImage,
+  //       gender: values.gender,
+  //     },
+  //     jobDetail: {
+  //       companyName: values.companyName,
+  //       department: values.department,
+  //       jobPosition: values.jobPosition,
+  //       manager: values.manager,
+  //       designation: values.designation,
+  //       joiningDate: values.joiningDate,
+  //       role: values.role,
+  //       salary: values.salary,
+  //       status: values.status,
+  //       employeeId: values.employeeId,
+  //       dropZone: values.dropZone,
+  //       Skills: values.Skills,
+  //     },
+  //     signInDetail: {
+  //       userName: values.userName,
+  //       signInEmail: values.signInEmail,
+  //       password: values.password,
+  //       confirmPassword: values.confirmPassword,
+  //     },
+  //   };
   //   try {
+
   //     await attendanceAPI.post(
   //       `${process.env.REACT_APP_API_URL}/users`,
   //       payload
@@ -185,30 +379,32 @@ export const AddUserModal: React.FC = () => {
   //   }
   // };
 
-  try {
-    if (isEditing) {
-      // Perform update logic
-      // Replace with your update API call
-      await updateUser(user?._id!, payload); // Example updateUser function
-      message.success("User updated successfully");
-    } else {
-      // Perform create logic
-      await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
-      message.success("User created successfully");
-    }
-    form.resetFields();
-    setIsModalOpen(false);
-  } catch (error) {
-    console.error("Failed to submit form:", error);
-    setError("Failed to submit form. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+  // try {
+  //   if (isEditing) {
+  //     // Perform update logic
+  //     // Replace with your update API call
+  //     await updateUser(user?._id!, payload); // Example updateUser function
+  //     message.success("User updated successfully");
+  //   } else {
+  //     // Perform create logic
+  //     await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
+  //     message.success("User created successfully");
+  //   }
+  //   form.resetFields();
+  //   setIsModalOpen(false);
+  // } catch (error) {
+  //   console.error("Failed to submit form:", error);
+  //   setError("Failed to submit form. Please try again.");
+  // } finally {
+  //   setLoading(false);
+  // }
+// };
+
+
 
   return (
     <div>
-      <div className="flex justify-between bg-slate-200 p-1 rounded-md">
+{  !openModal &&    <div className="flex justify-between bg-slate-200 p-1 rounded-md">
         <div className="border-l-4 r h-9 flex items-center">
           <Title level={5} className="ml-2"></Title>
         </div>
@@ -216,9 +412,10 @@ export const AddUserModal: React.FC = () => {
           <EditOutlined />
           New Employee
         </Button>
-      </div>
+      </div>}
       <Modal
         title={isEditing ? "Edit Employee" : "New Employee"}
+        // title={"New Employee"}
         visible={isModalOpen}
         onCancel={handleCancel}
         className="!w-[70%]"
@@ -257,10 +454,9 @@ export const AddUserModal: React.FC = () => {
                 }}
               >
                 <img
-                  // src="https://via.placeholder.com/150"
-                  src="/assets/menIcon.jpg"
+                 
+                  src={imageUrl || "/assets/menIcon.jpg"} 
                   alt="Muqeet Profile"
-                  // alt="profile"
                   style={{
                     width: 180,
                     height: 180,
@@ -268,11 +464,24 @@ export const AddUserModal: React.FC = () => {
                     marginBottom: 10,
                   }}
                 />
-                <Upload>
-                  <Button icon={<UploadOutlined />}>
-                    Upload Profile Image
-                  </Button>
-                </Upload>
+         
+                <Upload
+        name="file"
+        action={`${process.env.REACT_APP_API_URL}/upload`} 
+        method="post"
+        accept="image/*"
+        showUploadList={false}
+        onChange={handleUploadSuccess}
+        beforeUpload={(file) => {
+          return true;
+        }}
+        
+      >
+        <Button icon={<UploadOutlined />}>
+             Upload Profile Image
+            </Button>
+      </Upload>
+       
               </div>
             </Form.Item>
           </Col>
@@ -318,7 +527,7 @@ export const AddUserModal: React.FC = () => {
                           },
                         ]}
                       >
-                        <Input placeholder="Enter full name" readOnly={!isEditing} />
+                        <Input placeholder="Enter full name" />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
@@ -410,7 +619,15 @@ export const AddUserModal: React.FC = () => {
 
                     <Col xs={24} sm={12}>
                       <Form.Item label="DOB" name="dob">
-                        <DatePicker style={{ width: "100%" }} />
+
+                   {  user && openModal ?    <Input
+                            defaultValue={moment(
+                              user.userDetail.dob
+                            ).format("MMMM Do YYYY")}
+                            readOnly
+                       
+                        /> : <DatePicker style={{ width: "100%" }} /> }
+
                       </Form.Item>
                     </Col>
                   </Row>
@@ -541,26 +758,20 @@ export const AddUserModal: React.FC = () => {
                           },
                         ]}
                       >
-                        <DatePicker style={{ width: "100%" }} />
+                       
+
+                        {  user && openModal ?    <Input
+                            defaultValue={moment(
+                              user.jobDetail.joiningDate
+                            ).format("MMMM Do YYYY")}
+                            readOnly
+                       
+                        /> :  <DatePicker style={{ width: "100%" }} /> }
                       </Form.Item>
                     </Col>
                   </Row>
-                  {/* <Row gutter={[16, 0]}>
-                  <Col xs={24} sm={12}>
-                  <Form.Item label="File" name="dropZone">
-                      <Input placeholder="Upload File " />
-                    </Form.Item>
-                  </Col>
-                  </Row> */}
-
-<Row gutter={[20, 0]}>
-      {/* Optionally, uncomment and modify other columns as needed */}
-      {/* <Col xs={24} sm={12}>
-        <Form.Item label="Skills" name="skills">
-          <Input placeholder="Enter skills" />
-        </Form.Item>
-      </Col> */}
-      <Col xs={24} sm={12}>
+        {/* <Row gutter={[20, 0]}>
+      <Col xs={24} sm={12} lg={24}>
         <Form.Item label="Files" name="dropZone">
         <Dropzone onDrop={handleDrop}>
       {({ getRootProps, getInputProps }: DropzoneState) => (
@@ -571,10 +782,11 @@ export const AddUserModal: React.FC = () => {
             borderRadius: "5px",
             padding: "20px",
             cursor: "pointer",
-            height: "150px",
+            height: "100px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            width: "100%",
           }}
         >
           <input {...getInputProps()} />
@@ -592,7 +804,7 @@ export const AddUserModal: React.FC = () => {
     </Dropzone>
         </Form.Item>
       </Col>
-    </Row>
+    </Row> */}
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}></Col>
                   </Row>

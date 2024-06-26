@@ -360,11 +360,21 @@ export const AttendanceHistory: React.FC = () => {
   };
 
   const columns = [
-    {
-      title: "Employee ID",
-      dataIndex: ["jobDetail", "employeeId"],
-      key: "employeeId",
-    },
+  // {
+  //   title: "Employee ID",
+  //   dataIndex: ["jobDetail", "employeeId"],
+  //   key: "employeeId",
+  //   render: (employeeId: number) => {
+  //     // Log the employeeId to console
+  //     console.log("Employee ID:", employeeId);
+
+  //     // Find the user based on employeeId
+  //     const user = users.find((user) => user.jobDetail.employeeId === employeeId);
+      
+  //     // Check if user is found and return their employeeId
+  //     return user ? `${user.jobDetail.employeeId}` : "";
+  //   },
+  // },
     {
       title: "Date",
       dataIndex: "date",

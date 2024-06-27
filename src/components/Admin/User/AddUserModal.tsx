@@ -23,9 +23,12 @@ import { EditOutlined, UploadOutlined, UserOutlined } from "@ant-design/icons";
 import "./AddUserModel.css";
 // import Dropzone from "react-dropzone";
 // import Dropzone, { DropzoneState, FileRejection } from 'react-dropzone';
-import Dropzone, { DropzoneState, FileRejection, DropEvent } from 'react-dropzone';
+import Dropzone, {
+  DropzoneState,
+  FileRejection,
+  DropEvent,
+} from "react-dropzone";
 import { RcFile, UploadChangeParam } from "antd/es/upload";
-
 
 const { Title } = Typography;
 
@@ -68,41 +71,49 @@ const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
 
-
 interface AddUserModalProps {
-  openModal?: boolean; // Define the prop type for editUser
+  openModal?: boolean;
   closeModal?: () => void;
   userData?: UserData | null;
 }
 
-export const AddUserModal: React.FC<AddUserModalProps> = ({ openModal , closeModal , userData }) => {
-  
+export const AddUserModal: React.FC<AddUserModalProps> = ({
+  openModal,
+  closeModal,
+  userData,
+}) => {
   const [form] = Form.useForm();
   const location = useLocation();
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState( openModal ? true : false);
+  const [isEditing, setIsEditing] = useState(openModal ? true : false);
   const [user, setUser] = useState<UserData | null>(userData ? userData : null);
-  const [isModalOpen, setIsModalOpen] = useState(openModal ? true :false);
+  const [isModalOpen, setIsModalOpen] = useState(openModal ? true : false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState("");
 
+  useEffect(() => {
+    if (user && user.userDetail && user.userDetail.profileImage) {
+      setProfileImage(user.userDetail.profileImage);
+    } else {
+      setProfileImage("/assets/menIcon.jpg");
+    }
+  }, [user]);
 
-
-  const handleDrop = (acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => {
+  const handleDrop = (
+    acceptedFiles: File[],
+    fileRejections: FileRejection[],
+    event: DropEvent
+  ) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
     } else {
-      console.log('File rejected:', fileRejections);
+      console.log("File rejected:", fileRejections);
     }
   };
-
-  // const showModal = () => {
-  //   setIsModalOpen(true);
-  //   setIsEditing(true); 
-  // };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -110,24 +121,14 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ openModal , closeMod
     form.resetFields(); // Reset form fields when modal opens
   };
 
-  // const handleCancel = () => {
-  //   setIsModalOpen(false);
-  //   setLoading(true);
-  //   setIsEditing(false);
-  // };
-
   const handleCancel = () => {
-
     if (openModal) {
       closeModal && closeModal();
-    }
-    else{
-
+    } else {
       setIsModalOpen(false);
       setLoading(false);
-      form.resetFields(); // Reset form fields when modal cancels
+      form.resetFields();
     }
-
   };
 
   // useEffect(() => {
@@ -151,20 +152,23 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ openModal , closeMod
         ...user.signInDetail,
         password: "",
         confirmPassword: "",
-        dob: user.userDetail.dob ? moment(user.userDetail.dob).format('MMMM Do YYYY') : null,
-      joiningDate: user.jobDetail.joiningDate ? moment(user.jobDetail.joiningDate).format('MMMM Do YYYY') : null,
+        dob: user.userDetail.dob
+          ? moment(user.userDetail.dob).format("MMMM Do YYYY")
+          : null,
+        joiningDate: user.jobDetail.joiningDate
+          ? moment(user.jobDetail.joiningDate).format("MMMM Do YYYY")
+          : null,
       });
     }
   }, [user, form, isEditing]);
-console.log("user>>>>>>>>>>" , user);
+  console.log("user>>>>>>>>>>", user);
 
-  
   interface UserFormProps {
     attendanceAPI: any;
     form: any;
     setIsModalOpen: (isOpen: boolean) => void;
   }
-  
+
   const handleFileChange = (info: UploadChangeParam) => {
     const newFile = info.file.originFileObj as File | undefined;
     if (newFile) {
@@ -172,8 +176,8 @@ console.log("user>>>>>>>>>>" , user);
     }
   };
 
-  const handleUploadSuccess = async (info:any) => {
-    if (info.file.status === 'done') {
+  const handleUploadSuccess = async (info: any) => {
+    if (info.file.status === "done") {
       const response = info.file.response;
       setImageUrl(response.url);
     }
@@ -182,10 +186,13 @@ console.log("user>>>>>>>>>>" , user);
     setLoading(true);
     setError(null);
 
-    const formattedDob = values.dob ? moment(values.dob, 'MMMM Do YYYY').toDate() : null;
-    const formattedJoiningDate = values.joiningDate ? moment(values.joiningDate, 'MMMM Do YYYY').toDate() : null;
-  
-  
+    const formattedDob = values.dob
+      ? moment(values.dob, "MMMM Do YYYY").toDate()
+      : null;
+    const formattedJoiningDate = values.joiningDate
+      ? moment(values.joiningDate, "MMMM Do YYYY").toDate()
+      : null;
+
     const payload = {
       userDetail: {
         fullName: values.fullName,
@@ -193,10 +200,9 @@ console.log("user>>>>>>>>>>" , user);
         email: values.email,
         address: values.address,
         phone: values.phone,
-        // dob: values.dob,
         dob: formattedDob,
         cnic: values.cnic,
-        profileImage: imageUrl,
+        profileImage: imageUrl || profileImage,
         gender: values.gender,
       },
       jobDetail: {
@@ -217,24 +223,32 @@ console.log("user>>>>>>>>>>" , user);
       signInDetail: {
         userName: values.userName,
         signInEmail: values.signInEmail,
-        password: values.password,
-        confirmPassword: values.confirmPassword,
+        ...(values.password && { password: values.password }),
+        ...(values.confirmPassword && {
+          confirmPassword: values.confirmPassword,
+        }),
       },
     };
-  
+
     try {
       let response;
       if (openModal && user) {
-        response = await attendanceAPI.patch(`${process.env.REACT_APP_API_URL}/update?userId=${user._id}`, payload);
+        response = await attendanceAPI.patch(
+          `${process.env.REACT_APP_API_URL}/update?userId=${user._id}`,
+          payload
+        );
         message.success("User updated successfully");
       } else {
-        response = await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
+        response = await attendanceAPI.post(
+          `${process.env.REACT_APP_API_URL}/users`,
+          payload
+        );
         message.success("User created successfully");
       }
-  
+
       form.resetFields();
       setIsModalOpen(false);
-  
+
       if (openModal) {
         closeModal && closeModal();
       }
@@ -245,174 +259,19 @@ console.log("user>>>>>>>>>>" , user);
       setLoading(false);
     }
   };
-  
-//   const onFinish = async (values:any) => {
-//     setLoading(true);
-//     setError(null);
-
-//     const payload = {
-//       userDetail: {
-//         fullName: values.fullName,
-//         fatherName: values.fatherName,
-//         email: values.email,
-//         address: values.address,
-//         phone: values.phone,
-//         dob: values.dob,
-//         cnic: values.cnic,
-//         profileImage: imageUrl, 
-//         gender: values.gender,
-//       },
-//       jobDetail: {
-//         companyName: values.companyName,
-//         department: values.department,
-//         jobPosition: values.jobPosition,
-//         manager: values.manager,
-//         designation: values.designation,
-//         joiningDate: values.joiningDate,
-//         role: values.role,
-//         salary: values.salary,
-//         status: values.status,
-//         employeeId: values.employeeId,
-//         dropZone: values.dropZone,
-//         Skills: values.Skills,
-//       },
-//       signInDetail: {
-//         userName: values.userName,
-//         signInEmail: values.signInEmail,
-//         password: values.password,
-//         confirmPassword: values.confirmPassword,
-//       },
-//     };
-
-//   //   try {
-//   //     const response = await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
-//   //     message.success("User created successfully");
-//   //     form.resetFields();
-//   //     setLoading(false);
-//   //     setIsModalOpen(false);
-//   //   } catch (error) {
-//   //     console.error("Failed to create user:", error);
-//   //     setError("Failed to create user. Please try again.");
-//   //   } finally {
-//   //     setLoading(false);
-//   //   }
-//   // };
-//   try {
-//     let response;
-//     if (openModal && user) {
-//       response = await attendanceAPI.patch(`${process.env.REACT_APP_API_URL}/update?userId=${user._id}`,user);
-//       message.success("User updated successfully");
-//     } else {
-//       response = await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
-//       message.success("User created successfully");
-//     }
-
-//     form.resetFields(); 
-//     setIsModalOpen(false);
-
-//     if (openModal) {
-//       closeModal && closeModal();
-//     }
-   
-
-//   } catch (error) {
-//     console.error("Failed to save user:", error);
-//     setError("Failed to save user. Please try again.");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-  // const onFinish = async (values: any) => {
-  //   setLoading(true);
-  //   setError(null);
-
- 
-
-  //   const payload = {
-  //     userDetail: {
-  //       fullName: values.fullName,
-  //       fatherName: values.fatherName,
-  //       email: values.email,
-  //       address: values.address,
-  //       phone: values.phone,
-  //       dob: values.dob,
-  //       cnic: values.cnic,
-  //       profileImage: values.profileImage,
-  //       gender: values.gender,
-  //     },
-  //     jobDetail: {
-  //       companyName: values.companyName,
-  //       department: values.department,
-  //       jobPosition: values.jobPosition,
-  //       manager: values.manager,
-  //       designation: values.designation,
-  //       joiningDate: values.joiningDate,
-  //       role: values.role,
-  //       salary: values.salary,
-  //       status: values.status,
-  //       employeeId: values.employeeId,
-  //       dropZone: values.dropZone,
-  //       Skills: values.Skills,
-  //     },
-  //     signInDetail: {
-  //       userName: values.userName,
-  //       signInEmail: values.signInEmail,
-  //       password: values.password,
-  //       confirmPassword: values.confirmPassword,
-  //     },
-  //   };
-  //   try {
-
-  //     await attendanceAPI.post(
-  //       `${process.env.REACT_APP_API_URL}/users`,
-  //       payload
-  //     );
-  //     message.success("User created successfully");
-  //     form.resetFields();
-  //     setLoading(true);
-  //     setIsModalOpen(false);
-  //   } catch (error) {
-  //     console.error("Failed to create user:", error);
-  //     setError("Failed to create user. Please try again.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // try {
-  //   if (isEditing) {
-  //     // Perform update logic
-  //     // Replace with your update API call
-  //     await updateUser(user?._id!, payload); // Example updateUser function
-  //     message.success("User updated successfully");
-  //   } else {
-  //     // Perform create logic
-  //     await attendanceAPI.post(`${process.env.REACT_APP_API_URL}/users`, payload);
-  //     message.success("User created successfully");
-  //   }
-  //   form.resetFields();
-  //   setIsModalOpen(false);
-  // } catch (error) {
-  //   console.error("Failed to submit form:", error);
-  //   setError("Failed to submit form. Please try again.");
-  // } finally {
-  //   setLoading(false);
-  // }
-// };
-
-
-
   return (
     <div>
-{  !openModal &&    <div className="flex justify-between bg-slate-200 p-1 rounded-md">
-        <div className="border-l-4 r h-9 flex items-center">
-          <Title level={5} className="ml-2"></Title>
+      {!openModal && (
+        <div className="flex justify-between bg-slate-200 p-1 rounded-md">
+          <div className="border-l-4 r h-9 flex items-center">
+            <Title level={5} className="ml-2"></Title>
+          </div>
+          <Button onClick={showModal}>
+            <EditOutlined />
+            New Employee
+          </Button>
         </div>
-        <Button onClick={showModal}>
-          <EditOutlined />
-          New Employee
-        </Button>
-      </div>}
+      )}
       <Modal
         title={isEditing ? "Edit Employee" : "New Employee"}
         // title={"New Employee"}
@@ -454,8 +313,7 @@ console.log("user>>>>>>>>>>" , user);
                 }}
               >
                 <img
-                 
-                  src={imageUrl || "/assets/menIcon.jpg"} 
+                  src={imageUrl || profileImage}
                   alt="Muqeet Profile"
                   style={{
                     width: 180,
@@ -464,24 +322,22 @@ console.log("user>>>>>>>>>>" , user);
                     marginBottom: 10,
                   }}
                 />
-         
+
                 <Upload
-        name="file"
-        action={`${process.env.REACT_APP_API_URL}/upload`} 
-        method="post"
-        accept="image/*"
-        showUploadList={false}
-        onChange={handleUploadSuccess}
-        beforeUpload={(file) => {
-          return true;
-        }}
-        
-      >
-        <Button icon={<UploadOutlined />}>
-             Upload Profile Image
-            </Button>
-      </Upload>
-       
+                  name="file"
+                  action={`${process.env.REACT_APP_API_URL}/upload`}
+                  method="post"
+                  accept="image/*"
+                  showUploadList={false}
+                  onChange={handleUploadSuccess}
+                  beforeUpload={(file) => {
+                    return true;
+                  }}
+                >
+                  <Button icon={<UploadOutlined />}>
+                    Upload Profile Image
+                  </Button>
+                </Upload>
               </div>
             </Form.Item>
           </Col>
@@ -528,10 +384,10 @@ console.log("user>>>>>>>>>>" , user);
                         ]}
                       >
                         <Input placeholder="Enter full name" />
-                        </Form.Item>
+                      </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="Father Name" name="fatherName"> 
+                      <Form.Item label="Father Name" name="fatherName">
                         <Input placeholder="Enter father name" />
                       </Form.Item>
                     </Col>
@@ -619,15 +475,16 @@ console.log("user>>>>>>>>>>" , user);
 
                     <Col xs={24} sm={12}>
                       <Form.Item label="DOB" name="dob">
-
-                   {  user && openModal ?    <Input
-                            defaultValue={moment(
-                              user.userDetail.dob
-                            ).format("MMMM Do YYYY")}
+                        {user && openModal ? (
+                          <Input
+                            defaultValue={moment(user.userDetail.dob).format(
+                              "MMMM Do YYYY"
+                            )}
                             readOnly
-                       
-                        /> : <DatePicker style={{ width: "100%" }} /> }
-
+                          />
+                        ) : (
+                          <DatePicker style={{ width: "100%" }} />
+                        )}
                       </Form.Item>
                     </Col>
                   </Row>
@@ -758,19 +615,20 @@ console.log("user>>>>>>>>>>" , user);
                           },
                         ]}
                       >
-                       
-
-                        {  user && openModal ?    <Input
+                        {user && openModal ? (
+                          <Input
                             defaultValue={moment(
                               user.jobDetail.joiningDate
                             ).format("MMMM Do YYYY")}
                             readOnly
-                       
-                        /> :  <DatePicker style={{ width: "100%" }} /> }
+                          />
+                        ) : (
+                          <DatePicker style={{ width: "100%" }} />
+                        )}
                       </Form.Item>
                     </Col>
                   </Row>
-        {/* <Row gutter={[20, 0]}>
+                  {/* <Row gutter={[20, 0]}>
       <Col xs={24} sm={12} lg={24}>
         <Form.Item label="Files" name="dropZone">
         <Dropzone onDrop={handleDrop}>

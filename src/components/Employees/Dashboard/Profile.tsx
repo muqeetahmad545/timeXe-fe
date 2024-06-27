@@ -23,7 +23,6 @@ export const Profile = () => {
       setUserData(userData);
       console.log("userData", userData?.signInDetail.userName);
     };
-
     fetchData();
   }, []);
 
@@ -174,7 +173,7 @@ export const Profile = () => {
         <div className="flex p-2">
         <Avatar
             alt="User Avatar"
-            src={userData?.userDetail?.profileImage || ""}
+            src={userData?.userDetail?.profileImage || "/assets/menIcon.jpg"}
             style={{ width: 150, height: 150 }}
           />
           <div className="ml-10">

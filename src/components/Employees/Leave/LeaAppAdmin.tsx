@@ -4,6 +4,10 @@ import { format } from "date-fns";
 import { fetchAllLeaveApplications, updateLeaveApplication } from "../../../services/leaveApplication/leaveApplication";
 import { Option } from "antd/es/mentions";
 import { ApplicationData } from "../../types";
+import "./leaveAppAdmin.css";
+
+
+
 const { Title } = Typography;
 
 const columns = [
@@ -39,7 +43,6 @@ const columns = [
     title: "Reason",
     dataIndex: "reason",
     key: "reason",
-    width: 200,
   },
   {
     title: "Application Status",
@@ -116,7 +119,9 @@ export const LeaAppAdmin: React.FC = () => {
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col></Col>
       </Row>
-      <Table dataSource={leaveApplicationData} columns={columns} rowKey="_id" />
+      {/* <Table dataSource={leaveApplicationData} columns={columns} rowKey="_id" /> */}
+      <Table dataSource={leaveApplicationData} columns={columns} rowKey="_id" className="custom-table" />
+
     </div>
   );
 };

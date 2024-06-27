@@ -793,7 +793,6 @@ import Dropzone from "react-dropzone";
 import attendanceAPI from "../../../services/axios";
 
 const { Title } = Typography;
-
 export const Employees: React.FC = () => {
   const [form] = Form.useForm();
   const [users, setUsers] = useState<User[]>([]);
@@ -805,21 +804,15 @@ export const Employees: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
 
-
   const handleEditUser = (user:any) => {
     setSelectedUser(user);
     setIsModalOpen(true);
   };
-  // const showModal = () => {
-  //   setIsModalOpen(true);
-  //   setIsEditing(true); 
-  // };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setIsEditing(false); 
   };
-
 
   const handleRowClick = (record: User, columnIndex: number) => {
     if (columns[columnIndex].key !== "action") {
@@ -830,23 +823,41 @@ export const Employees: React.FC = () => {
     }
   };
   
+  // useEffect(() => {
+  //   const fetchUsersData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const usersData = await fetchUsers();
+  //       setUsers(usersData);
+  //     } catch (error) {
+  //       console.error("Error fetching users:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchUsersData();
+  // }, []);
+
+  const fetchUsersData = async () => {
+    try {
+      const usersData = await fetchUsers();
+      setUsers(usersData);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsersData = async () => {
-      setLoading(true);
-      try {
-        const usersData = await fetchUsers();
-        setUsers(usersData);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUsersData();
   }, []);
 
+  const refreshData = () => {
+    fetchUsersData(); 
+  };
+ 
   if (loading) {
     return (
       <Row justify="center" align="middle" style={{ height: "100vh" }}>
@@ -895,19 +906,6 @@ export const Employees: React.FC = () => {
     }
   };
 
-
-  // const handleupdate = async (userId: string) => {
-  //   try {
-  //     const userToUpdate = users.find((user) => user._id === userId);
-  //     if (!userToUpdate) {
-  //       throw new Error(`User with ID ${userId} not found`);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating user status:", error);
-  //     message.error("Failed to update user status");
-  //   }
-  // };
-
   const getStatusColor = (status: string): string => {
     switch (status) {
       case "Active":
@@ -918,7 +916,7 @@ export const Employees: React.FC = () => {
         return "gray";
     }
   };
-
+  
   const showModal = async (userData?: UserData, userId?: string) => {
     console.log("userData", userData);
     if (userData) {
@@ -938,40 +936,9 @@ export const Employees: React.FC = () => {
       setIsEditing(false);
       form.resetFields();
     }
-
- 
-
     setIsModalOpen(true);
-    // if (userId) {
-    //   try {
-    //     const response = await attendanceAPI.patch(`http://localhost:3010/api/update?userId=${userId}`, userData);
-    //     console.log('API Response:', response.data);
-    //   } catch (error) {
-    //     console.error('Error updating user:', error);
-    //   }
-    // }
-  };
-  // const showModal = (userData?: UserData) => {
-  //   console.log("userData",userData)
-  //   if (userData) {
-  //     setUser(userData);
-  //     setIsEditing(true);
-  //     form.setFieldsValue({
-  //       ...userData.userDetail,
-  //       ...userData.jobDetail,
-  //       ...userData.signInDetail,
-  //       password: '',
-  //       confirmPassword: '',
-  //     });
-  //   } else {
-  //     setUser(null);
-  //     setIsEditing(false);
-  //     form.resetFields();
-  //   }
-  //   setIsModalOpen(true);
-  // };
 
-  
+  };
   const columns = [
     {
       title: "Profile Image",
@@ -1044,9 +1011,6 @@ export const Employees: React.FC = () => {
         <EditOutlined
           style={{ fontSize: 20, cursor: "pointer" }}
           onClick={() => showModal(record, record._id)}
-          // onClick={()=>{
-          //   showModal()
-          // }}
         />
       </span>
       <span>
@@ -1089,7 +1053,7 @@ export const Employees: React.FC = () => {
       <div className="flex justify-between bg-slate-200 p-1 rounded-md w-full">
 
      
-      { isModalOpen && <AddUserModal openModal = {isModalOpen} closeModal={closeModal}  userData = {user}/>}
+      { isModalOpen && <AddUserModal openModal = {isModalOpen} closeModal={closeModal}  userData = {user} onModalClose={refreshData} fetchUsersData={fetchUsersData}/>}
 
         <div className="border-l-4 border-secondary-color h-9 flex items-center">
           <Title level={5} className="ml-2">
@@ -1106,8 +1070,7 @@ export const Employees: React.FC = () => {
             />
           </Col>
           <Col>
-            <AddUserModal />
-          </Col>
+{  <AddUserModal   onModalClose={refreshData} fetchUsersData={fetchUsersData} />} </Col>
         </Row>
       </div>
       <Divider />

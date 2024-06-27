@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Divider,
@@ -14,31 +14,57 @@ import {
 import { EditOutlined } from "@ant-design/icons";
 import type { FormProps } from "antd";
 import { createLeaveApplication } from "../../../services/leaveApplication/leaveApplication";
-import { ApplicationData } from "../../types";
+import { ApplicationData, UserData } from "../../types";
 import moment from "moment";
+import { fetchUserData } from "../../../services/userApis/userApis";
 
 const { Title } = Typography;
 
-export const LeaveModal: React.FC = () => {
+interface LeaveModalProps {
+  onModalClose: () => void;
+  getData?: () => void; 
+}
+
+export const LeaveModal: React.FC<LeaveModalProps> = ({ onModalClose, getData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
   const [form] = Form.useForm();
-
-  const showModal = () => {
+  const showModal = async () => {
     setIsModalOpen(true);
+    setLoading(true);
+    try {
+      const fetchedUserData = await fetchUserData();
+      setUserData(fetchedUserData);
+      form.setFieldsValue({
+        manager: fetchedUserData?.jobDetail.manager,
+        userName: fetchedUserData?.signInDetail.userName,
+      });
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      setError("Failed to fetch user data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
-
   const handleCancel = () => {
     setIsModalOpen(false);
+    onModalClose(); 
+    if (getData) {
+      getData();
+    }
   };
-
   const onFinish: FormProps<ApplicationData>["onFinish"] = async (values) => {
     setLoading(true);
     setError(null);
     try {
       await createLeaveApplication(values);
       console.log("Leave application created successfully");
+      if (getData) {
+        getData(); 
+      }
       form.resetFields();
       setIsModalOpen(false);
     } catch (error) {
@@ -54,8 +80,8 @@ export const LeaveModal: React.FC = () => {
   ) => {
     console.log("Failed:", errorInfo);
   };
+
   const disabledDate = (current: moment.Moment | null) => {
-    // Disable past dates
     return current && current < moment().startOf("day");
   };
 
@@ -105,6 +131,26 @@ export const LeaveModal: React.FC = () => {
           autoComplete="off"
           layout="vertical"
         >
+           <Row gutter={[16, 0]}>
+       
+            <Col xs={24} sm={12}>
+              <Form.Item<ApplicationData>
+                 label="User Name"
+  name="userName"
+              >
+  <Input placeholder="User name"  readOnly />
+  </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={12}>
+              <Form.Item<ApplicationData>
+                label="Manager"
+                name="manager"
+              >
+            <Input placeholder="Manager name " readOnly/>
+              </Form.Item>
+            </Col>
+          </Row> 
           <Form.Item<ApplicationData>
             label="Leave Type"
             name="leaveType"
@@ -121,6 +167,7 @@ export const LeaveModal: React.FC = () => {
               ]}
             />
           </Form.Item>
+          
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={12}>
               <Form.Item<ApplicationData>

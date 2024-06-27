@@ -5,7 +5,7 @@ export interface UserData {
     email: string;
     address: string;
     phone: number;
-    dob: Date;
+    dob: Date | string;
     cnic: string;
     profileImage: string;
     gender: string;
@@ -98,6 +98,7 @@ export interface AttendanceRecord {
 }
 export interface AttendanceData {
   _id: string;
+  manager: string;
   userName: string;
   time_in: string;
   date: string;
@@ -112,6 +113,7 @@ export interface AttendanceData {
 
 export interface ApplicationData {
   _id: string;
+  manager: string;
   leaveType: string;
   userName?: string;
   reason?: string;

@@ -15,7 +15,7 @@ import {
   Upload,
   Card,
 } from "antd";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import attendanceAPI from "../../../services/axios";
 import { createUser, updateUser } from "../../../services/userApis/userApis";
 import { User, UserData } from "../../types";
@@ -75,12 +75,15 @@ interface AddUserModalProps {
   openModal?: boolean;
   closeModal?: () => void;
   userData?: UserData | null;
+  onModalClose: () => void;
+  fetchUsersData?:() => void;  
 }
 
 export const AddUserModal: React.FC<AddUserModalProps> = ({
   openModal,
   closeModal,
   userData,
+  fetchUsersData,
 }) => {
   const [form] = Form.useForm();
   const location = useLocation();
@@ -94,7 +97,19 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState("");
+  // const [date, setDate] = useState(user ? moment(user.jobDetail.joiningDate) : null);
+  const initialDate = user ? moment(user.jobDetail.joiningDate) : null;
+  const [date, setDate] = useState<Moment | null>(initialDate);
 
+  const handleDateChange = (date: Moment | null, dateString: string) => {
+    if (date && date.isValid()) {
+      setDate(date);
+      setIsEditing(false);
+    }
+  };
+
+  const customDateFormat = "MM D, YYYY";
+    
   useEffect(() => {
     if (user && user.userDetail && user.userDetail.profileImage) {
       setProfileImage(user.userDetail.profileImage);
@@ -117,8 +132,8 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
   const showModal = () => {
     setIsModalOpen(true);
-    setIsEditing(false); // Reset to new user mode
-    form.resetFields(); // Reset form fields when modal opens
+    setIsEditing(false); 
+    form.resetFields(); 
   };
 
   const handleCancel = () => {
@@ -128,41 +143,11 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       setIsModalOpen(false);
       setLoading(false);
       form.resetFields();
+      if (fetchUsersData) {
+        fetchUsersData();
+      }
     }
   };
-
-  // useEffect(() => {
-  //   if (user) {
-  //     console.log("user", user);
-  //     form.setFieldsValue({
-  //       ...user.userDetail,
-  //       ...user.jobDetail,
-  //       ...user.signInDetail,
-  //       password: "",
-  //       confirmPassword: "",
-  //     });
-  //   }
-  // }, [user, form]);
-
-  useEffect(() => {
-    if (user && isEditing) {
-      form.setFieldsValue({
-        ...user.userDetail,
-        ...user.jobDetail,
-        ...user.signInDetail,
-        password: "",
-        confirmPassword: "",
-        dob: user.userDetail.dob
-          ? moment(user.userDetail.dob).format("MMMM Do YYYY")
-          : null,
-        joiningDate: user.jobDetail.joiningDate
-          ? moment(user.jobDetail.joiningDate).format("MMMM Do YYYY")
-          : null,
-      });
-    }
-  }, [user, form, isEditing]);
-  console.log("user>>>>>>>>>>", user);
-
   interface UserFormProps {
     attendanceAPI: any;
     form: any;
@@ -187,12 +172,11 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     setError(null);
 
     const formattedDob = values.dob
-      ? moment(values.dob, "MMMM Do YYYY").toDate()
-      : null;
-    const formattedJoiningDate = values.joiningDate
-      ? moment(values.joiningDate, "MMMM Do YYYY").toDate()
-      : null;
-
+    ? moment(values.dob, "YYYY-MM-DD").toDate()
+    : null;
+  const formattedJoiningDate = values.joiningDate
+    ? moment(values.joiningDate, "YYYY-MM-DD").toDate()
+    : null;
     const payload = {
       userDetail: {
         fullName: values.fullName,
@@ -238,14 +222,24 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
           payload
         );
         message.success("User updated successfully");
+        // fetchUsersData();
+        if (fetchUsersData) {
+          fetchUsersData(); 
+        }
+
       } else {
         response = await attendanceAPI.post(
           `${process.env.REACT_APP_API_URL}/users`,
           payload
         );
         message.success("User created successfully");
-      }
+        // fetchUsersData();
+        if (fetchUsersData) {
+          fetchUsersData(); 
+        }
 
+      }
+      setUser(response.data);
       form.resetFields();
       setIsModalOpen(false);
 
@@ -259,6 +253,27 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       setLoading(false);
     }
   };
+
+
+
+   useEffect(() => {
+    if (user && isEditing) {
+      form.setFieldsValue({
+        ...user.userDetail,
+        ...user.jobDetail,
+        ...user.signInDetail,
+        password: "",
+        confirmPassword: "",
+        dob: user.userDetail.dob
+        ? moment(user.userDetail.dob).format("YYYY-MM-DD")
+        : null,
+      joiningDate: user.jobDetail.joiningDate
+        ? moment(user.jobDetail.joiningDate).format("YYYY-MM-DD")
+        : null,
+      });
+    }
+  }, [user, form, isEditing]);
+  console.log("user>>>>>>>>>>", user);
   return (
     <div>
       {!openModal && (
@@ -452,7 +467,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Select Gender"
+                        label="Gender"
                         labelCol={{ span: 12 }}
                         name="gender"
                         rules={[
@@ -477,15 +492,21 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                       <Form.Item label="DOB" name="dob">
                         {user && openModal ? (
                           <Input
-                            defaultValue={moment(user.userDetail.dob).format(
-                              "MMMM Do YYYY"
-                            )}
-                            readOnly
+                            defaultValue={moment(user.userDetail.dob).format()}
                           />
                         ) : (
                           <DatePicker style={{ width: "100%" }} />
                         )}
                       </Form.Item>
+                      {/* <Form.Item label="DOB" name="dob">
+                        {user && openModal ? (
+                          <DatePicker
+                            style={{ width: "100%" }}
+                          />
+                        ) : (
+                          <DatePicker style={{ width: "100%" }} />
+                        )}
+                      </Form.Item> */}
                     </Col>
                   </Row>
                   <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
@@ -493,7 +514,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                       Jobs Details
                     </Title>
                   </div>
-
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}>
                       <Form.Item
@@ -512,7 +532,18 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     </Col>
                     <Col xs={24} sm={12}>
                       <Form.Item label="Department" name="department">
-                        <Input placeholder="Enter department" />
+                        {/* <Input placeholder="Enter department" /> */}
+                        <Select
+                          defaultValue="Select Department"
+                          onChange={handleChange}
+                          options={[
+                            { value: "Administration", label: "Administration" },
+                            { value: "Designing", label: "Designing" },
+                            { value: "Management", label: "Management" },
+                            { value: "Reserch & Development", label: "Reserch & Development" },
+                            { value: "Sales", label: "Sales" },
+                          ]}
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -520,7 +551,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     <Col xs={24} sm={12}>
                       <Form.Item label="Job Position" name="jobPosition">
                         <Select
-                          defaultValue="Select Gender"
+                          defaultValue="Select Job Position"
                           onChange={handleChange}
                           options={[
                             { value: "Full Time", label: "Full Time" },
@@ -532,7 +563,16 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     </Col>
                     <Col xs={24} sm={12}>
                       <Form.Item label="Manager" name="manager">
-                        <Input placeholder="Enter manager name" />
+                      <Select
+                          defaultValue="Select Manager"
+                          onChange={handleChange}
+                          options={[
+                            { value: "Ali", label: "Ali" },
+                            { value: "Aqib", label: "Aqib" },
+                            { value: "Mushrif", label: "Mushraif" },
+                          ]}
+                        />
+                        {/* <Input placeholder="Enter manager name" /> */}
                       </Form.Item>
                     </Col>
                   </Row>
@@ -608,19 +648,19 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                       <Form.Item
                         label="Joining Date"
                         name="joiningDate"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Enter user Joining Date",
-                          },
-                        ]}
+                        // rules={[
+                        //   {
+                        //     required: true,
+                        //     message: "Please Enter user Joining Date",
+                        //   },
+                        // ]}
                       >
                         {user && openModal ? (
                           <Input
                             defaultValue={moment(
                               user.jobDetail.joiningDate
                             ).format("MMMM Do YYYY")}
-                            readOnly
+                            // readOnly
                           />
                         ) : (
                           <DatePicker style={{ width: "100%" }} />
@@ -694,7 +734,35 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     </Col>
                   </Row>
                   <Row gutter={[16, 0]}>
-                    <Col xs={24} sm={12}>
+                  {!isEditing && (
+  <Col xs={24} sm={12}>
+    <Form.Item
+      label="Password"
+      name="password"
+      rules={
+        isEditing
+          ? []
+          : [
+              {
+                required: true,
+                message: "Please Enter Password!",
+              },
+            ]
+      }
+    >
+      <Input.Password
+        placeholder={
+          isEditing
+            ? "Leave blank to keep unchanged"
+            : "Enter password"
+        }
+        // readOnly
+      />
+    </Form.Item>
+  </Col>
+)}
+
+                    {/* <Col xs={24} sm={12}>
                       <Form.Item
                         label="Password"
                         name="password"
@@ -715,9 +783,11 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                               ? "Leave blank to keep unchanged"
                               : "Enter password"
                           }
+                          readOnly
                         />
                       </Form.Item>
-                    </Col>
+                    </Col> */}
+                       {!isEditing && (
                     <Col xs={24} sm={12}>
                       <Form.Item
                         label="Confirm Password"
@@ -743,7 +813,8 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                           }
                         />
                       </Form.Item>
-                    </Col>
+                      </Col>
+)}
                   </Row>
                 </Form>
               </div>

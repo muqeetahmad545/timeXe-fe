@@ -160,6 +160,7 @@ export const LeaveModal: React.FC<LeaveModalProps> = ({ onModalClose, getData })
           >
             <Select
               placeholder="Choose Leave Type"
+              
               options={[
                 { value: "sick leave", label: "Sick leave" },
                 { value: "casual leave", label: "Casual leave" },

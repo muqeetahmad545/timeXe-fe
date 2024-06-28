@@ -14,6 +14,8 @@ import {
   Divider,
   Upload,
   Card,
+  Spin,
+  Avatar,
 } from "antd";
 import moment, { Moment } from "moment";
 import attendanceAPI from "../../../services/axios";
@@ -70,7 +72,6 @@ const onFinishFailed = (errorInfo: any) => {
 const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
-
 interface AddUserModalProps {
   openModal?: boolean;
   closeModal?: () => void;
@@ -78,7 +79,6 @@ interface AddUserModalProps {
   onModalClose: () => void;
   fetchUsersData?:() => void;  
 }
-
 export const AddUserModal: React.FC<AddUserModalProps> = ({
   openModal,
   closeModal,
@@ -97,19 +97,10 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState("");
-  // const [date, setDate] = useState(user ? moment(user.jobDetail.joiningDate) : null);
-  const initialDate = user ? moment(user.jobDetail.joiningDate) : null;
-  const [date, setDate] = useState<Moment | null>(initialDate);
-
-  const handleDateChange = (date: Moment | null, dateString: string) => {
-    if (date && date.isValid()) {
-      setDate(date);
-      setIsEditing(false);
-    }
+  const [openDatePicker, setOpenDatePicker] = useState(false);
+  const handleInputClick = () => {
+    setIsModalOpen(true); // Open DatePicker when clicking on Input
   };
-
-  const customDateFormat = "MM D, YYYY";
-    
   useEffect(() => {
     if (user && user.userDetail && user.userDetail.profileImage) {
       setProfileImage(user.userDetail.profileImage);
@@ -162,21 +153,19 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
   };
 
   const handleUploadSuccess = async (info: any) => {
+    if (info.file.status === "uploading") {
+      setLoading(true); 
+    }
     if (info.file.status === "done") {
       const response = info.file.response;
       setImageUrl(response.url);
+      setLoading(false);
     }
   };
+
   const onFinish = async (values: any) => {
     setLoading(true);
     setError(null);
-
-    const formattedDob = values.dob
-    ? moment(values.dob, "YYYY-MM-DD").toDate()
-    : null;
-  const formattedJoiningDate = values.joiningDate
-    ? moment(values.joiningDate, "YYYY-MM-DD").toDate()
-    : null;
     const payload = {
       userDetail: {
         fullName: values.fullName,
@@ -184,7 +173,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         email: values.email,
         address: values.address,
         phone: values.phone,
-        dob: formattedDob,
+        dob: values.dob,
         cnic: values.cnic,
         profileImage: imageUrl || profileImage,
         gender: values.gender,
@@ -195,8 +184,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         jobPosition: values.jobPosition,
         manager: values.manager,
         designation: values.designation,
-        // joiningDate: values.joiningDate,
-        joiningDate: formattedJoiningDate,
+        joiningDate: values.joiningDate,
         role: values.role,
         salary: values.salary,
         status: values.status,
@@ -222,7 +210,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
           payload
         );
         message.success("User updated successfully");
-        // fetchUsersData();
         if (fetchUsersData) {
           fetchUsersData(); 
         }
@@ -233,16 +220,13 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
           payload
         );
         message.success("User created successfully");
-        // fetchUsersData();
         if (fetchUsersData) {
           fetchUsersData(); 
         }
-
       }
       setUser(response.data);
       form.resetFields();
       setIsModalOpen(false);
-
       if (openModal) {
         closeModal && closeModal();
       }
@@ -254,9 +238,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     }
   };
 
-
-
-   useEffect(() => {
+  useEffect(() => {
     if (user && isEditing) {
       form.setFieldsValue({
         ...user.userDetail,
@@ -273,6 +255,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       });
     }
   }, [user, form, isEditing]);
+
   console.log("user>>>>>>>>>>", user);
   return (
     <div>
@@ -289,7 +272,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       )}
       <Modal
         title={isEditing ? "Edit Employee" : "New Employee"}
-        // title={"New Employee"}
         visible={isModalOpen}
         onCancel={handleCancel}
         className="!w-[70%]"
@@ -307,7 +289,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
               key="submit"
               type="primary"
               onClick={() => form.submit()}
-              loading={loading}
+              // loading={loading}
               className="footerButton"
             >
               Submit
@@ -327,17 +309,19 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                   alignItems: "center",
                 }}
               >
-                <img
+                <Avatar
                   src={imageUrl || profileImage}
                   alt="Muqeet Profile"
                   style={{
-                    width: 180,
-                    height: 180,
+                    width: 140,
+                    height: 140,
                     marginTop: 10,
                     marginBottom: 10,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 />
-
                 <Upload
                   name="file"
                   action={`${process.env.REACT_APP_API_URL}/upload`}
@@ -349,9 +333,19 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     return true;
                   }}
                 >
-                  <Button icon={<UploadOutlined />}>
+                   <Spin
+                    spinning={loading}
+                    indicator={<Spin style={{ fontSize: 24 }} />}
+                    size="large"
+                  ></Spin>
+                  <Button icon={<UploadOutlined />} 
+                      type="primary"
+                      htmlType="submit"
+                      className="w-full !bg-secondary-color"
+                      style={{ display: loading ? "none" : "block" }}
+                    >
                     Upload Profile Image
-                  </Button>
+                    </Button>
                 </Upload>
               </div>
             </Form.Item>
@@ -394,7 +388,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         rules={[
                           {
                             required: true,
-                            message: "Please Enter Full Name",
+                            message: "Please Enter Full Name!",
                           },
                         ]}
                       >
@@ -436,7 +430,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         rules={[
                           {
                             required: true,
-                            message: "Please Enter Phone Number",
+                            message: "Please Enter Phone Number!",
                           },
                         ]}
                       >
@@ -473,7 +467,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         rules={[
                           {
                             required: true,
-                            message: "Please Select one of the values!",
+                            message: "Please Select one of the gender!",
                           },
                         ]}
                       >
@@ -489,10 +483,16 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     </Col>
 
                     <Col xs={24} sm={12}>
-                      <Form.Item label="DOB" name="dob">
+                      <Form.Item label="DOB" name="dob"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Select Date of Birth!",
+                          },
+                        ]}>
                         {user && openModal ? (
                           <Input
-                            defaultValue={moment(user.userDetail.dob).format()}
+                            defaultValue={moment(user.userDetail.dob).format('YYYY-MM-DD')} 
                           />
                         ) : (
                           <DatePicker style={{ width: "100%" }} />
@@ -523,7 +523,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         rules={[
                           {
                             required: true,
-                            message: "Please Enter Company Name",
+                            message: "Please Enter Company Name!",
                           },
                         ]}
                       >
@@ -586,7 +586,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         rules={[
                           {
                             required: true,
-                            message: "Please Select one of the values!",
+                            message: "Please Select one of the designation!",
                           },
                         ]}
                       >
@@ -648,20 +648,26 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                       <Form.Item
                         label="Joining Date"
                         name="joiningDate"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: "Please Enter user Joining Date",
-                        //   },
-                        // ]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Select Joining Date!",
+                          },
+                        ]}
                       >
                         {user && openModal ? (
+                          // <Input
+                          //   defaultValue={moment(
+                          //     user.jobDetail.joiningDate
+                          //   ).format("MMMM Do YYYY")}
+                          //   // readOnly
+                          // />
                           <Input
-                            defaultValue={moment(
-                              user.jobDetail.joiningDate
-                            ).format("MMMM Do YYYY")}
-                            // readOnly
-                          />
+                          defaultValue={moment(user.jobDetail.joiningDate).format()
+                            
+                          }
+                          
+                        />
                         ) : (
                           <DatePicker style={{ width: "100%" }} />
                         )}
@@ -720,7 +726,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         rules={[
                           {
                             required: true,
-                            message: "Please Enter Full Name",
+                            message: "Please Enter Full Name!",
                           },
                         ]}
                       >
@@ -728,7 +734,13 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                       </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="SignIn Email" name="signInEmail">
+                      <Form.Item label="SignIn Email" name="signInEmail"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Enter  SignIn Email!",
+                          },
+                        ]}>
                         <Input type="email" placeholder="Enter SignIn Email" />
                       </Form.Item>
                     </Col>

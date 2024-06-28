@@ -3,6 +3,7 @@ import { Table, Row, Col, Spin } from "antd";
 import { LeaveModal } from "./LeaveModal";
 import { fetchAllLeaveApplicationsUser } from "../../../services/leaveApplication/leaveApplication";
 import { format } from "date-fns";
+import "./leaveApp.css"
 
 const getStatusColor = (status: string): string => {
   switch (status) {
@@ -63,7 +64,7 @@ const columns = [
     title: "Reason",
     dataIndex: "reason",
     key: "reason",
-    width: 200,
+    className: "reason", 
   },
 ];
 

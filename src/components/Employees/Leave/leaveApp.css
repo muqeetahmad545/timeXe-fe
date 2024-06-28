@@ -1,0 +1,24 @@
+/* leaveAppAdmin.css */
+
+.custom-table .ant-table-cell.reason {
+    max-width: 200px;
+    height: 60px; 
+     /* Adjust the width as per your requirement */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds ellipsis for overflow text */
+    white-space: nowrap; /* Prevents text wrapping */
+  }
+  
+  /* Adjusted CSS for the "Reason" column */
+.reason {
+  max-width: 200px; /* Adjust the max-width as per your requirement */
+  height: 60px; /* Adjust the height as per your requirement */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds ellipsis for overflow text */
+  white-space: nowrap; /* Prevents text wrapping */
+}
+
+
+.custom-modal {
+  text-align: center;
+}

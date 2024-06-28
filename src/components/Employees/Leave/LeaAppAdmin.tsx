@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Table, Typography, Row, Col, Spin, Alert, Select } from "antd";
+import { Table, Typography, Row, Col, Spin, Alert, Select, Form, DatePicker, Divider, Modal, Input, message } from "antd";
 import { format } from "date-fns";
 import { fetchAllLeaveApplications, updateLeaveApplication } from "../../../services/leaveApplication/leaveApplication";
 import { Option } from "antd/es/mentions";
 import { ApplicationData } from "../../types";
-import "./leaveAppAdmin.css";
-
-
-
-const { Title } = Typography;
+import "./leaveApp.css";
+import moment from "moment";
+import TextArea from "antd/es/input/TextArea";
+const { confirm } = Modal;
 
 const columns = [
   {
@@ -22,6 +21,11 @@ const columns = [
     dataIndex: "userName",
     key: "userName",
   },   
+  {
+    title: "Manager",
+    dataIndex: "manager",
+    key: "manager",
+  },
   {
     title: "Start Date",
     dataIndex: "startDate",
@@ -43,13 +47,14 @@ const columns = [
     title: "Reason",
     dataIndex: "reason",
     key: "reason",
+    className: "reason", 
   },
   {
     title: "Application Status",
     dataIndex: "leaveStatus",
     key: "leaveStatus",
     render: (status: string, record: any) => (
-      <Select defaultValue={status} onChange={(value) => handleStatusChange(record._id, value)}>
+      <Select  style={{ width: 110 }}  defaultValue={status} onChange={(value) => handleStatusChange(record._id, value)}>
         <Option value="Pending">Pending</Option>
         <Option value="Approved">Approved</Option>
         <Option value="Rejected">Rejected</Option>
@@ -61,17 +66,28 @@ const columns = [
 const handleStatusChange = async (applicationID: string, status: string) => {
   try {
     await updateLeaveApplication(applicationID, { leaveStatus: status } as Partial<ApplicationData>);
+    message.success(`Leav Application status updated to ${status} successfully`);
   } catch (error) {
     console.error("Error updating leave application:", error);
+    message.error("Failed to update user status");
   }
 };
 export const LeaAppAdmin: React.FC = () => {
   const [leaveApplicationData, setLeaveApplicationData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { Title } = Typography;
+   const [selectedleaveApplication, setSelectedleaveApplication] = useState<ApplicationData | null>(null);
+   const [isReadOnlyModalOpen, setIsReadOnlyModalOpen] = useState(false);
 
-
-
+const handleRowClick = (record: ApplicationData, columnIndex: number) => {
+  if (columns[columnIndex].key !== "leaveStatus") {
+    setSelectedleaveApplication(record);
+    setIsReadOnlyModalOpen(true);
+  } else {
+    setIsReadOnlyModalOpen(false);
+  }
+};
   useEffect(() => {
     const getData = async () => {
       try {
@@ -119,9 +135,64 @@ export const LeaAppAdmin: React.FC = () => {
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
         <Col></Col>
       </Row>
-      {/* <Table dataSource={leaveApplicationData} columns={columns} rowKey="_id" /> */}
-      <Table dataSource={leaveApplicationData} columns={columns} rowKey="_id" className="custom-table" />
-
-    </div>
+      <Table dataSource={leaveApplicationData}    columns={columns.map((col, index) => ({
+          ...col,
+            onCell: (record: ApplicationData) => ({
+            onClick: () => handleRowClick(record, index),
+          }),
+        }))} />
+           <Modal
+            title="Leave Request"
+            visible={isReadOnlyModalOpen}
+            onCancel={() => setIsReadOnlyModalOpen(false)}
+            footer={null}
+            style={{ minWidth: '40vw' }} 
+            centered 
+            className="custom-modal"
+          >
+            {selectedleaveApplication && (
+                    <Form
+                    className="mt-4 w-full"
+                    name="basic"
+                    labelCol={{ span: 8 }}
+                    initialValues={{ remember: true }}
+                    autoComplete="off"
+                    layout="vertical"
+                  >
+                <Row gutter={[16, 0]}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="User Name">
+                      <Input value={selectedleaveApplication.userName} readOnly />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="Manager">
+                      <Input value={selectedleaveApplication.manager} readOnly />
+                    </Form.Item>
+                  </Col>
+                </Row>
+            
+                <Row gutter={[16, 0]}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="Start Date">
+                      <Input value={moment(selectedleaveApplication.startDate).format("MMMM Do YYYY")} readOnly />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item label="End Date">
+                      <Input value={moment(selectedleaveApplication.endDate).format("MMMM Do YYYY")} readOnly />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Form.Item label="Leave Type">
+                  <Input value={selectedleaveApplication.leaveType} readOnly />
+                </Form.Item>
+                <Form.Item   label="Reason">
+                <Input.TextArea rows={4} value={selectedleaveApplication.reason} readOnly autoSize={{ minRows: 1, maxRows: 8 }} />
+                </Form.Item>
+        </Form>
+            )}
+          </Modal>
+   </div>
   );
 };

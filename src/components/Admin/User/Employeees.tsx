@@ -15,7 +15,6 @@ import {
   DatePicker,
   Select,
   Avatar,
-
 } from "antd";
 import { User, UserData } from "../../types";
 import {
@@ -44,14 +43,14 @@ export const Employees: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
 
-  const handleEditUser = (user:any) => {
+  const handleEditUser = (user: any) => {
     setSelectedUser(user);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setIsEditing(false); 
+    setIsEditing(false);
   };
 
   const handleRowClick = (record: User, columnIndex: number) => {
@@ -62,7 +61,7 @@ export const Employees: React.FC = () => {
       setIsReadOnlyModalOpen(false);
     }
   };
-    const fetchUsersData = async () => {
+  const fetchUsersData = async () => {
     try {
       const usersData = await fetchUsers();
       setUsers(usersData);
@@ -78,9 +77,9 @@ export const Employees: React.FC = () => {
   }, []);
 
   const refreshData = () => {
-    fetchUsersData(); 
+    fetchUsersData();
   };
- 
+
   if (loading) {
     return (
       <Row justify="center" align="middle" style={{ height: "100vh" }}>
@@ -139,11 +138,11 @@ export const Employees: React.FC = () => {
         return "gray";
     }
   };
-  
+
   const showModal = async (userData?: UserData, userId?: string) => {
     console.log("userData", userData);
     if (userData) {
-    console.log("inside");
+      console.log("inside");
 
       setUser(userData);
       setIsEditing(true);
@@ -151,8 +150,8 @@ export const Employees: React.FC = () => {
         ...userData.userDetail,
         ...userData.jobDetail,
         ...userData.signInDetail,
-        password: '',
-        confirmPassword: '',
+        password: "",
+        confirmPassword: "",
       });
     } else {
       setUser(null);
@@ -167,10 +166,10 @@ export const Employees: React.FC = () => {
       dataIndex: ["userDetail", "profileImage"],
       key: "profileImage",
       render: (profileImage: string) => (
-        <Avatar src={profileImage|| "/assets/menIcon.jpeg"}/>
+        <Avatar src={profileImage || "/assets/menIcon.jpeg"} />
       ),
-    }, 
-       {
+    },
+    {
       title: "Employee ID",
       dataIndex: ["jobDetail", "employeeId"],
       key: "employeeId",
@@ -228,20 +227,20 @@ export const Employees: React.FC = () => {
       title: "Action",
       key: "action",
       render: (text: any, record: User) => (
-       <div style={{ display: "flex", alignItems: "center" }}>
-       <span style={{ marginRight: 8 }}>
-        <EditOutlined
-          style={{ fontSize: 20, cursor: "pointer" }}
-          onClick={() => showModal(record, record._id)}
-        />
-      </span>
-      <span>
-          <FaUserAltSlash
-            style={{ fontSize: 20, color: "red", cursor: "pointer" }}
-            onClick={() => handleStatusUpdate(record._id)}
-          />
-        </span>
-     </div>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span style={{ marginRight: 8 }}>
+            <EditOutlined
+              style={{ fontSize: 20, cursor: "pointer" }}
+              onClick={() => showModal(record, record._id)}
+            />
+          </span>
+          <span>
+            <FaUserAltSlash
+              style={{ fontSize: 20, color: "red", cursor: "pointer" }}
+              onClick={() => handleStatusUpdate(record._id)}
+            />
+          </span>
+        </div>
       ),
     },
   ];
@@ -273,9 +272,15 @@ export const Employees: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between bg-slate-200 p-1 rounded-md w-full">
-
-     
-      { isModalOpen && <AddUserModal openModal = {isModalOpen} closeModal={closeModal}  userData = {user} onModalClose={refreshData} fetchUsersData={fetchUsersData}/>}
+        {isModalOpen && (
+          <AddUserModal
+            openModal={isModalOpen}
+            closeModal={closeModal}
+            userData={user}
+            onModalClose={refreshData}
+            fetchUsersData={fetchUsersData}
+          />
+        )}
 
         <div className="border-l-4 border-secondary-color h-9 flex items-center">
           <Title level={5} className="ml-2">
@@ -292,7 +297,13 @@ export const Employees: React.FC = () => {
             />
           </Col>
           <Col>
-{  <AddUserModal   onModalClose={refreshData} fetchUsersData={fetchUsersData} />} </Col>
+            {
+              <AddUserModal
+                onModalClose={refreshData}
+                fetchUsersData={fetchUsersData}
+              />
+            }{" "}
+          </Col>
         </Row>
       </div>
       <Divider />
@@ -308,281 +319,271 @@ export const Employees: React.FC = () => {
       <Modal
         title="Employee Details"
         visible={isReadOnlyModalOpen}
-        className="!w-[50%]"
+        className="!w-[70%]"
         onCancel={() => setIsReadOnlyModalOpen(false)}
         footer={null}
       >
+        <Divider className="!mt-3" />
+
         {selectedUser && (
-        
           <div>
+            <Row gutter={[16, 0]}>
+              <Col xs={8} lg={6} style={{ marginTop: 20 }}>
+                <Form.Item style={{ textAlign: "center" }}>
+                  <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
+                    <Title level={5} className="ml-2">
+                      Profile Image
+                    </Title>
+                  </div>
 
+                  <div style={{ textAlign: "center", marginTop: "8px" }}>
+                    <Avatar
+                      alt="User Avatar"
+                      src={selectedUser.userDetail.profileImage}
+                      style={{ width: 150, height: 150 }}
+                    />
+                  </div>
+                </Form.Item>
+              </Col>
 
-                
-            {/* <Col xs={8} lg={20} style={{ marginTop: 20 }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <img
-                  src="/assets/menIcon.jpg"
-                  alt="Profile"
+              <Col xs={8} sm={2} md={16} lg={18}>
+                <div
+                  className="modalBody"
                   style={{
-                    width: 180,
-                    height: 180,
-                    marginTop: 10,
-                    marginBottom: 10,
+                    maxHeight: "60vh",
+                    overflowX: "hidden",
+                    scrollbarWidth: "thin",
                   }}
-                />
-                <Upload>
-                  <Button icon={<UploadOutlined />}>
-                    Upload Profile Image
-                  </Button>
-                </Upload>
-              </div>
-            </Col> */}
-
-{/* <Col xs={24} sm={12}>
-  <Form.Item label="Profile Image">
-    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <Avatar
-        alt="User Avatar"
-        src={selectedUser.userDetail.profileImage}
-        style={{ width: 150, height: 150 }}
-      />
-    </div>
-  </Form.Item>
-</Col> */}
-
-
-            <Col xs={8} sm={2} md={16} lg={24}>
-              <div
-                className="modalBody"
-                style={{
-                  maxHeight: "60vh",
-                  overflowX: "hidden",
-                  scrollbarWidth: "thin",
-                }}
-              >
-                <div className="form-container">
-                <Form
-                  className="mt-4 w-full"
-                  name="basic"
-                  labelCol={{ span: 8 }}
-                  initialValues={{ remember: true }}
-                  autoComplete="off"
-                  layout="vertical"
                 >
-                  <div className="mt-4 w-full">
-                    <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
-                      <Title level={5} className="ml-2">
-                        User Details
-                      </Title>
-                    </div>
-                    <Row gutter={[16, 0]}>
-                    {" "}
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Full Name" name="fullName">
-                          <Input
-                            placeholder="Enter full name"
-                            defaultValue={selectedUser.signInDetail.userName}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Father Name" name="fatherName">
-                          <Input
-                            placeholder="Enter father's name"
-                            defaultValue={selectedUser.userDetail.fatherName}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
+                  <div className="form-container">
+                    <Form
+                      className="mt-4 w-full"
+                      name="basic"
+                      labelCol={{ span: 8 }}
+                      initialValues={{ remember: true }}
+                      autoComplete="off"
+                      layout="vertical"
+                    >
+                      <div className="mt-4 w-full">
+                        <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
+                          <Title level={5} className="ml-2">
+                            User Details
+                          </Title>
+                        </div>
+                        <Row gutter={[16, 0]}>
+                          {" "}
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Full Name" name="fullName">
+                              <Input
+                                placeholder="Enter full name"
+                                defaultValue={
+                                  selectedUser.signInDetail.userName
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Father Name" name="fatherName">
+                              <Input
+                                placeholder="Enter father's name"
+                                defaultValue={
+                                  selectedUser.userDetail.fatherName
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
 
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item
-                          label="Email"
-                          name="email"
-                          rules={[
-                            { required: true, message: "Please Enter Email" },
-                          ]}
-                        >
-                          <Input
-                            placeholder="Enter full name"
-                            defaultValue={selectedUser.signInDetail.signInEmail}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Address" name="address">
-                          <Input
-                            placeholder="Enter address"
-                            defaultValue={selectedUser.userDetail.address}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item
-                          label="Phone Number"
-                          labelCol={{ span: 10 }}
-                          name="phone"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please Enter Phone Number",
-                            },
-                          ]}
-                        >
-                          <Input
-                            placeholder="Enter phone number"
-                            defaultValue={selectedUser.userDetail.phone}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="CNIC" name="cnic">
-                          <Input
-                            placeholder="12345-1234567-1"
-                            defaultValue={selectedUser.userDetail.cnic}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item
-                          label="Select Gender"
-                          labelCol={{ span: 10 }}
-                          name="gender"
-                        >
-                          <Input
-                            defaultValue={selectedUser.userDetail.gender}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item
+                              label="Email"
+                              name="email"
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Please Enter Email",
+                                },
+                              ]}
+                            >
+                              <Input
+                                placeholder="Enter full name"
+                                defaultValue={
+                                  selectedUser.signInDetail.signInEmail
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Address" name="address">
+                              <Input
+                                placeholder="Enter address"
+                                defaultValue={selectedUser.userDetail.address}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item
+                              label="Phone Number"
+                              labelCol={{ span: 10 }}
+                              name="phone"
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Please Enter Phone Number",
+                                },
+                              ]}
+                            >
+                              <Input
+                                placeholder="Enter phone number"
+                                defaultValue={selectedUser.userDetail.phone}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="CNIC" name="cnic">
+                              <Input
+                                placeholder="12345-1234567-1"
+                                defaultValue={selectedUser.userDetail.cnic}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item
+                              label="Select Gender"
+                              labelCol={{ span: 10 }}
+                              name="gender"
+                            >
+                              <Input
+                                defaultValue={selectedUser.userDetail.gender}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
 
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="DOB" name="dob">
-                          <Input
-                            defaultValue={moment(
-                              selectedUser.userDetail.dob
-                            ).format("MMMM Do YYYY")}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1 mt-2">
-                      <Title level={5} className="ml-2">
-                        Job Details
-                      </Title>
-                    </div>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item
-                          label="Company Name"
-                          labelCol={{ span: 10 }}
-                          name="companyName"
-                        >
-                          <Input
-                            placeholder="Enter company name"
-                            defaultValue={selectedUser.jobDetail.companyName}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Department" name="department">
-                          <Input
-                            placeholder="Enter department"
-                            defaultValue={selectedUser.jobDetail.department}
-                            readOnly
-                          />
-                        </Form.Item>
-                        {/* <p>
-                          <strong>Role:</strong> {selectedUser.jobDetail.role}
-                        </p> */}
-                      </Col>
-                    </Row>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Job Position" name="jobPosition">
-                          <Input
-                            defaultValue={selectedUser.jobDetail.jobPosition}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Manager" name="manager">
-                          <Input
-                            placeholder="Enter manager name"
-                            defaultValue={selectedUser.jobDetail.manager}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item
-                          label="Select Designation"
-                          labelCol={{ span: 12 }}
-                          name="designation"
-                        >
-                          <Input
-                            defaultValue={selectedUser.jobDetail.designation}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="DOB" name="dob">
+                              <Input
+                                defaultValue={moment(
+                                  selectedUser.userDetail.dob
+                                ).format("MMMM Do YYYY")}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1 mt-2">
+                          <Title level={5} className="ml-2">
+                            Job Details
+                          </Title>
+                        </div>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item
+                              label="Company Name"
+                              labelCol={{ span: 10 }}
+                              name="companyName"
+                            >
+                              <Input
+                                placeholder="Enter company name"
+                                defaultValue={
+                                  selectedUser.jobDetail.companyName
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Department" name="department">
+                              <Input
+                                placeholder="Enter department"
+                                defaultValue={selectedUser.jobDetail.department}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Job Position" name="jobPosition">
+                              <Input
+                                defaultValue={
+                                  selectedUser.jobDetail.jobPosition
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Manager" name="manager">
+                              <Input
+                                placeholder="Enter manager name"
+                                defaultValue={selectedUser.jobDetail.manager}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item
+                              label="Select Designation"
+                              labelCol={{ span: 12 }}
+                              name="designation"
+                            >
+                              <Input
+                                defaultValue={
+                                  selectedUser.jobDetail.designation
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
 
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Select role" name="role">
-                          <Input
-                            defaultValue={selectedUser.jobDetail.role}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Salary" name="salary">
-                          <Input
-                            placeholder="Enter Salary "
-                            defaultValue={selectedUser.jobDetail.salary}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="Joining Date" name="joiningDate">
-                          <Input
-                            defaultValue={moment(
-                              selectedUser.jobDetail.joiningDate
-                            ).format("MMMM Do YYYY")}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    {/* <Row gutter={[20, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Select role" name="role">
+                              <Input
+                                defaultValue={selectedUser.jobDetail.role}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Salary" name="salary">
+                              <Input
+                                placeholder="Enter Salary "
+                                defaultValue={selectedUser.jobDetail.salary}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="Joining Date" name="joiningDate">
+                              <Input
+                                defaultValue={moment(
+                                  selectedUser.jobDetail.joiningDate
+                                ).format("MMMM Do YYYY")}
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        {/* <Row gutter={[20, 0]}>
                       <Col xs={24} sm={12}> */}
                         {/* <Form.Item label="Files" name="dropZone"> */}
-                          {/* <Dropzone onDrop={handleDrop}>
+                        {/* <Dropzone onDrop={handleDrop}>
                             {({
                               getRootProps,
                               getInputProps,
@@ -615,9 +616,9 @@ export const Employees: React.FC = () => {
                             )}
                           </Dropzone> */}
                         {/* </Form.Item> */}
-                      {/* </Col> */}
-                    {/* </Row> */}
-                    {/* <Row gutter={[16, 0]}>
+                        {/* </Col> */}
+                        {/* </Row> */}
+                        {/* <Row gutter={[16, 0]}>
                       <Col xs={24} sm={12}>
                         <p>
                           <strong>Joining Date:</strong>{" "}
@@ -634,7 +635,7 @@ export const Employees: React.FC = () => {
                       </Col>
                     </Row> */}
 
-                    {/* <Row gutter={[16, 0]}>
+                        {/* <Row gutter={[16, 0]}>
                       <Col xs={24} sm={12}>
                         <p>
                           <strong>Designation:</strong>{" "}
@@ -642,37 +643,41 @@ export const Employees: React.FC = () => {
                         </p>
                       </Col>
                     </Row> */}
-                    <Row gutter={[16, 0]}>
-                      <Col xs={24} sm={12}></Col>
-                    </Row>
-                    <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
-                      <Title level={5} className="ml-2">
-                        SignIn Details
-                      </Title>
-                    </div>
-                    <Row gutter={[16, 0]}>
-                      {" "}
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="User Name" name="userName">
-                          <Input
-                            placeholder="Enter full name"
-                            defaultValue={selectedUser.signInDetail.userName}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} sm={12}>
-                        <Form.Item label="SignIn Email" name="signInEmail">
-                          <Input
-                            type="email"
-                            placeholder="Enter SignIn Email"
-                            defaultValue={selectedUser.signInDetail.signInEmail}
-                            readOnly
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    {/* <Row gutter={[16, 0]}>
+                        <Row gutter={[16, 0]}>
+                          <Col xs={24} sm={12}></Col>
+                        </Row>
+                        <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
+                          <Title level={5} className="ml-2">
+                            SignIn Details
+                          </Title>
+                        </div>
+                        <Row gutter={[16, 0]}>
+                          {" "}
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="User Name" name="userName">
+                              <Input
+                                placeholder="Enter full name"
+                                defaultValue={
+                                  selectedUser.signInDetail.userName
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} sm={12}>
+                            <Form.Item label="SignIn Email" name="signInEmail">
+                              <Input
+                                type="email"
+                                placeholder="Enter SignIn Email"
+                                defaultValue={
+                                  selectedUser.signInDetail.signInEmail
+                                }
+                                readOnly
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        {/* <Row gutter={[16, 0]}>
                       <Col xs={24} sm={12}>
                         <Form.Item label="Password" name="password">
                           <Input.Password
@@ -696,13 +701,13 @@ export const Employees: React.FC = () => {
                         </Form.Item>
                       </Col>
                     </Row> */}
+                      </div>
+                    </Form>
                   </div>
-                  </Form>
                 </div>
-              </div>
-            </Col>
+              </Col>
+            </Row>
           </div>
-          
         )}
       </Modal>
     </div>

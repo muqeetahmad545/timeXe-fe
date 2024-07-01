@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   fetchAllUserAttendance,
@@ -150,7 +149,6 @@ export const AttendanceHistory: React.FC = () => {
   };
 
   const columns = [
-
     {
       title: "Date",
       dataIndex: "date",

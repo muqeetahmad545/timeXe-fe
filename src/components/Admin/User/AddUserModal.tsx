@@ -23,6 +23,7 @@ import { createUser, updateUser } from "../../../services/userApis/userApis";
 import { User, UserData } from "../../types";
 import { EditOutlined, UploadOutlined, UserOutlined } from "@ant-design/icons";
 import "./AddUserModel.css";
+import { AxiosError } from "axios";
 // import Dropzone from "react-dropzone";
 // import Dropzone, { DropzoneState, FileRejection } from 'react-dropzone';
 import Dropzone, {
@@ -77,7 +78,7 @@ interface AddUserModalProps {
   closeModal?: () => void;
   userData?: UserData | null;
   onModalClose: () => void;
-  fetchUsersData?:() => void;  
+  fetchUsersData?: () => void;
 }
 export const AddUserModal: React.FC<AddUserModalProps> = ({
   openModal,
@@ -123,8 +124,8 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
   const showModal = () => {
     setIsModalOpen(true);
-    setIsEditing(false); 
-    form.resetFields(); 
+    setIsEditing(false);
+    form.resetFields();
   };
 
   const handleCancel = () => {
@@ -154,7 +155,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
   const handleUploadSuccess = async (info: any) => {
     if (info.file.status === "uploading") {
-      setLoading(true); 
+      setLoading(true);
     }
     if (info.file.status === "done") {
       const response = info.file.response;
@@ -211,9 +212,8 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         );
         message.success("User updated successfully");
         if (fetchUsersData) {
-          fetchUsersData(); 
+          fetchUsersData();
         }
-
       } else {
         response = await attendanceAPI.post(
           `${process.env.REACT_APP_API_URL}/users`,
@@ -221,7 +221,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         );
         message.success("User created successfully");
         if (fetchUsersData) {
-          fetchUsersData(); 
+          fetchUsersData();
         }
       }
       setUser(response.data);
@@ -232,11 +232,104 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       }
     } catch (error) {
       console.error("Failed to save user:", error);
-      setError("Failed to save user. Please try again.");
+      if (error instanceof AxiosError && error.response) {
+        const backendError =
+          error.response.data?.error ||
+          "Failed to save user. Please try again.";
+        setError(backendError);
+        message.error(backendError);
+      } else {
+        const genericError = "Failed to save user. Please try again.";
+        setError(genericError);
+        message.error(genericError);
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  // const onFinish = async (values: any) => {
+  //   setLoading(true);
+  //   setError(null);
+  //   const payload = {
+  //     userDetail: {
+  //       fullName: values.fullName,
+  //       fatherName: values.fatherName,
+  //       email: values.email,
+  //       address: values.address,
+  //       phone: values.phone,
+  //       dob: values.dob,
+  //       cnic: values.cnic,
+  //       profileImage: imageUrl || profileImage,
+  //       gender: values.gender,
+  //     },
+  //     jobDetail: {
+  //       companyName: values.companyName,
+  //       department: values.department,
+  //       jobPosition: values.jobPosition,
+  //       manager: values.manager,
+  //       designation: values.designation,
+  //       joiningDate: values.joiningDate,
+  //       role: values.role,
+  //       salary: values.salary,
+  //       status: values.status,
+  //       employeeId: values.employeeId,
+  //       dropZone: values.dropZone,
+  //       Skills: values.Skills,
+  //     },
+  //     signInDetail: {
+  //       userName: values.userName,
+  //       signInEmail: values.signInEmail,
+  //       ...(values.password && { password: values.password }),
+  //       ...(values.confirmPassword && {
+  //         confirmPassword: values.confirmPassword,
+  //       }),
+  //     },
+  //   };
+
+  //   try {
+  //     let response;
+  //     if (openModal && user) {
+  //       response = await attendanceAPI.patch(
+  //         `${process.env.REACT_APP_API_URL}/update?userId=${user._id}`,
+  //         payload
+  //       );
+  //       message.success("User updated successfully");
+  //       if (fetchUsersData) {
+  //         fetchUsersData();
+  //       }
+  //     } else {
+  //       response = await attendanceAPI.post(
+  //         `${process.env.REACT_APP_API_URL}/users`,
+  //         payload
+  //       );
+  //       message.success("User created successfully");
+  //       if (fetchUsersData) {
+  //         fetchUsersData();
+  //       }
+  //     }
+  //     setUser(response.data);
+  //     form.resetFields();
+  //     setIsModalOpen(false);
+  //     if (openModal) {
+  //       closeModal && closeModal();
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to save user:", error);
+  //     setError(
+  //       error.response?.data?.error || "Failed to save user. Please try again."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  //   } catch (error) {
+  //     console.error("Failed to save user:", error);
+  //     setError("Failed to save user. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (user && isEditing) {
@@ -247,11 +340,11 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         password: "",
         confirmPassword: "",
         dob: user.userDetail.dob
-        ? moment(user.userDetail.dob).format("YYYY-MM-DD")
-        : null,
-      joiningDate: user.jobDetail.joiningDate
-        ? moment(user.jobDetail.joiningDate).format("YYYY-MM-DD")
-        : null,
+          ? moment(user.userDetail.dob).format("YYYY-MM-DD")
+          : null,
+        joiningDate: user.jobDetail.joiningDate
+          ? moment(user.jobDetail.joiningDate).format("YYYY-MM-DD")
+          : null,
       });
     }
   }, [user, form, isEditing]);
@@ -298,7 +391,8 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         ]}
       >
         <Divider className="!mt-3" />
-        {error && <div style={{ color: "red" }}>{error}</div>}
+
+        {/* {error && <div style={{ color: "red" }}>{error}</div>} */}
         <Row gutter={[16, 0]}>
           <Col xs={8} lg={6} style={{ marginTop: 20 }}>
             <Form.Item name="profileImage">
@@ -317,9 +411,9 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     height: 140,
                     marginTop: 10,
                     marginBottom: 10,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 />
                 <Upload
@@ -333,19 +427,22 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     return true;
                   }}
                 >
-                   <Spin
+                  <Spin
                     spinning={loading}
                     indicator={<Spin style={{ fontSize: 24 }} />}
                     size="large"
                   ></Spin>
-                  <Button icon={<UploadOutlined />} 
-                      type="primary"
-                      htmlType="submit"
-                      className="w-full !bg-secondary-color"
-                      style={{ display: loading ? "none" : "block" }}
-                    >
+                  <Button
+                    icon={<UploadOutlined style={{ padding: "5px" }} />}
+                    type="primary"
+                    htmlType="submit"
+                    className="w-full !bg-secondary-color"
+                    style={{
+                      display: loading ? "none" : "block",
+                    }}
+                  >
                     Upload Profile Image
-                    </Button>
+                  </Button>
                 </Upload>
               </div>
             </Form.Item>
@@ -383,14 +480,12 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     {" "}
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Full Name"
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span> Full Name
+                          </span>
+                        }
                         name="fullName"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Enter Full Name!",
-                          },
-                        ]}
                       >
                         <Input placeholder="Enter full name" />
                       </Form.Item>
@@ -405,13 +500,14 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Email"
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span> Email
+                          </span>
+                        }
                         name="email"
-                        rules={[
-                          { required: true, message: "Please Enter Email" },
-                        ]}
                       >
-                        <Input type="email" placeholder="Enter  email" />
+                        <Input type="email" placeholder="Enter email" />
                       </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
@@ -424,34 +520,25 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Phone Number"
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span> Phone Number
+                          </span>
+                        }
                         labelCol={{ span: 10 }}
                         name="phone"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Enter Phone Number!",
-                          },
-                        ]}
                       >
                         <Input placeholder="Enter phone number" />
                       </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="CNIC"
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span>CNIC
+                          </span>
+                        }
                         name="cnic"
-                        // rules={[
-                        //   { required: true, message: "Please Enter CNIC!" },
-                        //   {
-                        //     validator: (_, value) =>
-                        //       value && validateCNIC(value)
-                        //         ? Promise.resolve()
-                        //         : Promise.reject(
-                        //             "CNIC should be in the format 12345-1234567-1"
-                        //           ),
-                        //   },
-                        // ]}
                       >
                         <Input placeholder="12345-1234567-1" />
                       </Form.Item>
@@ -461,15 +548,13 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Gender"
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span> Gender
+                          </span>
+                        }
                         labelCol={{ span: 12 }}
                         name="gender"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Select one of the gender!",
-                          },
-                        ]}
                       >
                         <Select
                           defaultValue="Select Gender"
@@ -483,30 +568,24 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     </Col>
 
                     <Col xs={24} sm={12}>
-                      <Form.Item label="DOB" name="dob"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Select Date of Birth!",
-                          },
-                        ]}>
+                      <Form.Item
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span> DOB
+                          </span>
+                        }
+                        name="dob"
+                      >
                         {user && openModal ? (
                           <Input
-                            defaultValue={moment(user.userDetail.dob).format('YYYY-MM-DD')} 
+                            defaultValue={moment(user.userDetail.dob).format(
+                              "YYYY-MM-DD"
+                            )}
                           />
                         ) : (
                           <DatePicker style={{ width: "100%" }} />
                         )}
                       </Form.Item>
-                      {/* <Form.Item label="DOB" name="dob">
-                        {user && openModal ? (
-                          <DatePicker
-                            style={{ width: "100%" }}
-                          />
-                        ) : (
-                          <DatePicker style={{ width: "100%" }} />
-                        )}
-                      </Form.Item> */}
                     </Col>
                   </Row>
                   <div className="border-l-4 border-secondary-color h-7 flex items-center mb-1">
@@ -520,12 +599,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         label="Company Name"
                         labelCol={{ span: 10 }}
                         name="companyName"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Enter Company Name!",
-                          },
-                        ]}
                       >
                         <Input placeholder="Enter company name" />
                       </Form.Item>
@@ -537,10 +610,16 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                           defaultValue="Select Department"
                           onChange={handleChange}
                           options={[
-                            { value: "Administration", label: "Administration" },
+                            {
+                              value: "Administration",
+                              label: "Administration",
+                            },
                             { value: "Designing", label: "Designing" },
                             { value: "Management", label: "Management" },
-                            { value: "Reserch & Development", label: "Reserch & Development" },
+                            {
+                              value: "Reserch & Development",
+                              label: "Reserch & Development",
+                            },
                             { value: "Sales", label: "Sales" },
                           ]}
                         />
@@ -549,7 +628,14 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                   </Row>
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="Job Position" name="jobPosition">
+                      <Form.Item
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span>Job Position
+                          </span>
+                        }
+                        name="jobPosition"
+                      >
                         <Select
                           defaultValue="Select Job Position"
                           onChange={handleChange}
@@ -563,7 +649,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     </Col>
                     <Col xs={24} sm={12}>
                       <Form.Item label="Manager" name="manager">
-                      <Select
+                        <Select
                           defaultValue="Select Manager"
                           onChange={handleChange}
                           options={[
@@ -572,7 +658,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                             { value: "Mushrif", label: "Mushraif" },
                           ]}
                         />
-                        {/* <Input placeholder="Enter manager name" /> */}
                       </Form.Item>
                     </Col>
                   </Row>
@@ -583,12 +668,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         label="Select Designation"
                         labelCol={{ span: 12 }}
                         name="designation"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Select one of the designation!",
-                          },
-                        ]}
                       >
                         <Select
                           defaultValue="Select Designation"
@@ -617,14 +696,12 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Select role"
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span> Select role
+                          </span>
+                        }
                         name="role"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please select one of the roles!",
-                          },
-                        ]}
                       >
                         <Select
                           defaultValue="Select role"
@@ -646,69 +723,26 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     </Col>
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="Joining Date"
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span>Joining Date
+                          </span>
+                        }
                         name="joiningDate"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Select Joining Date!",
-                          },
-                        ]}
                       >
                         {user && openModal ? (
-                          // <Input
-                          //   defaultValue={moment(
-                          //     user.jobDetail.joiningDate
-                          //   ).format("MMMM Do YYYY")}
-                          //   // readOnly
-                          // />
                           <Input
-                          defaultValue={moment(user.jobDetail.joiningDate).format()
-                            
-                          }
-                          
-                        />
+                            defaultValue={moment(
+                              user.jobDetail.joiningDate
+                            ).format()}
+                          />
                         ) : (
                           <DatePicker style={{ width: "100%" }} />
                         )}
                       </Form.Item>
                     </Col>
                   </Row>
-                  {/* <Row gutter={[20, 0]}>
-      <Col xs={24} sm={12} lg={24}>
-        <Form.Item label="Files" name="dropZone">
-        <Dropzone onDrop={handleDrop}>
-      {({ getRootProps, getInputProps }: DropzoneState) => (
-        <div
-          {...getRootProps()}
-          style={{
-            border: "2px dashed #0087F7",
-            borderRadius: "5px",
-            padding: "20px",
-            cursor: "pointer",
-            height: "100px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-          }}
-        >
-          <input {...getInputProps()} />
-          {file ? (
-            <p>
-              File name: {file.name} ({file.size} bytes)
-            </p>
-          ) : (
-            <p>
-              Drag & drop files here, or click to select files
-            </p>
-          )}
-        </div>
-      )}
-    </Dropzone>
-        </Form.Item>
-      </Col>
-    </Row> */}
+
                   <Row gutter={[16, 0]}>
                     <Col xs={24} sm={12}></Col>
                   </Row>
@@ -721,58 +755,67 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                     {" "}
                     <Col xs={24} sm={12}>
                       <Form.Item
-                        label="User Name"
                         name="userName"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Enter Full Name!",
-                          },
-                        ]}
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span>User Name
+                          </span>
+                        }
                       >
                         <Input placeholder="Enter full name" />
                       </Form.Item>
                     </Col>
                     <Col xs={24} sm={12}>
-                      <Form.Item label="SignIn Email" name="signInEmail"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please Enter  SignIn Email!",
-                          },
-                        ]}>
+                      <Form.Item
+                        label={
+                          <span style={{ color: "black" }}>
+                            <span style={{ color: "red" }}>*</span>SignIn Email
+                          </span>
+                        }
+                        name="signInEmail"
+                        // rules={[
+                        //   {
+                        //     required: true,
+                        //     message: "Please Enter  SignIn Email!",
+                        //   },
+                        // ]}
+                      >
                         <Input type="email" placeholder="Enter SignIn Email" />
                       </Form.Item>
                     </Col>
                   </Row>
                   <Row gutter={[16, 0]}>
-                  {!isEditing && (
-  <Col xs={24} sm={12}>
-    <Form.Item
-      label="Password"
-      name="password"
-      rules={
-        isEditing
-          ? []
-          : [
-              {
-                required: true,
-                message: "Please Enter Password!",
-              },
-            ]
-      }
-    >
-      <Input.Password
-        placeholder={
-          isEditing
-            ? "Leave blank to keep unchanged"
-            : "Enter password"
-        }
-        // readOnly
-      />
-    </Form.Item>
-  </Col>
-)}
+                    {!isEditing && (
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          label={
+                            <span style={{ color: "black" }}>
+                              <span style={{ color: "red" }}>*</span>Password
+                            </span>
+                          }
+                          name="password"
+                          // rules={
+                          //   isEditing
+                          //     ? []
+                          //     : [
+                          //         {
+                          //           required: true,
+                          //           message: "Please Enter Password!",
+                          //         },
+                          //       ]
+                          // }
+                        >
+                          <Input.Password
+                            placeholder={
+                              isEditing
+                                ? "Leave blank to keep unchanged"
+                                : "Enter password"
+                            }
+                            // readOnly
+                          />
+                        </Form.Item>
+                      </Col>
+                    )}
 
                     {/* <Col xs={24} sm={12}>
                       <Form.Item
@@ -799,34 +842,39 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                         />
                       </Form.Item>
                     </Col> */}
-                       {!isEditing && (
-                    <Col xs={24} sm={12}>
-                      <Form.Item
-                        label="Confirm Password"
-                        labelCol={{ span: 10 }}
-                        name="confirmPassword"
-                        rules={
-                          isEditing
-                            ? []
-                            : [
-                                {
-                                  required: true,
-                                  message:
-                                    "Confirm Password must be matched with Password!",
-                                },
-                              ]
-                        }
-                      >
-                        <Input.Password
-                          placeholder={
-                            isEditing
-                              ? "Leave blank to keep unchanged"
-                              : "Confirm password"
+                    {!isEditing && (
+                      <Col xs={24} sm={12}>
+                        <Form.Item
+                          label={
+                            <span style={{ color: "black" }}>
+                              <span style={{ color: "red" }}>*</span>Confirm
+                              Password
+                            </span>
                           }
-                        />
-                      </Form.Item>
+                          labelCol={{ span: 10 }}
+                          name="confirmPassword"
+                          // rules={
+                          //   isEditing
+                          //     ? []
+                          //     : [
+                          //         {
+                          //           required: true,
+                          //           message:
+                          //             "Confirm Password must be matched with Password!",
+                          //         },
+                          //       ]
+                          // }
+                        >
+                          <Input.Password
+                            placeholder={
+                              isEditing
+                                ? "Leave blank to keep unchanged"
+                                : "Confirm password"
+                            }
+                          />
+                        </Form.Item>
                       </Col>
-)}
+                    )}
                   </Row>
                 </Form>
               </div>

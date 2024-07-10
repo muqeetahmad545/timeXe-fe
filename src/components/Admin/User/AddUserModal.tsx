@@ -43,7 +43,7 @@ type FieldType = {
   phone?: Number;
   companyName?: string;
   department?: string;
-  jobPosition?: string;
+  jobType?: string;
   profileImage?: string;
   manager?: string;
   password?: string;
@@ -182,7 +182,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
       jobDetail: {
         companyName: values.companyName,
         department: values.department,
-        jobPosition: values.jobPosition,
+        jobType: values.jobType,
         manager: values.manager,
         designation: values.designation,
         joiningDate: values.joiningDate,
@@ -266,7 +266,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
   //     jobDetail: {
   //       companyName: values.companyName,
   //       department: values.department,
-  //       jobPosition: values.jobPosition,
+  //       jobType: values.jobType,
   //       manager: values.manager,
   //       designation: values.designation,
   //       joiningDate: values.joiningDate,
@@ -349,9 +349,10 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
     }
   }, [user, form, isEditing]);
 
-  console.log("user>>>>>>>>>>", user);
+  // console.log("user>>>>>>>>>>", user);
   return (
     <div>
+      
       {!openModal && (
         <div className="flex justify-between bg-slate-200 p-1 rounded-md">
           <div className="border-l-4 r h-9 flex items-center">
@@ -631,13 +632,13 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
                       <Form.Item
                         label={
                           <span style={{ color: "black" }}>
-                            <span style={{ color: "red" }}>*</span>Job Position
+                            <span style={{ color: "red" }}>*</span>Job Type
                           </span>
                         }
-                        name="jobPosition"
+                        name="jobType"
                       >
                         <Select
-                          defaultValue="Select Job Position"
+                          defaultValue="Job Type"
                           onChange={handleChange}
                           options={[
                             { value: "Full Time", label: "Full Time" },

@@ -21,7 +21,6 @@ export const AppHeader = () => {
         {userName && (
           <div className="flex items-center space-x-5 mr-5">
             <Avatar className="text-5xl">{/* {userName.slice(0, 1)} */}</Avatar>
-            {/* <Typography variant="body1">{userName}</Typography> */}
           </div>
         )}
       </div>

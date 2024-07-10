@@ -1,0 +1,21 @@
+.employee-status-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .employee-counts {
+    text-align: center;
+    margin-bottom: 10px; /* Optional: Adjust margin as needed */
+  }
+  
+  .pie-chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .PieChart {
+    max-width: 500px; /* Adjust the maximum width of the PieChart */
+  
+  }
+  

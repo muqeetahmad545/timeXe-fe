@@ -375,9 +375,8 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="Full Name" name="fullName">
                               <Input
-                                placeholder="Enter full name"
                                 defaultValue={
-                                  selectedUser.signInDetail.userName
+                                  selectedUser.userDetail.fullName
                                 }
                                 readOnly
                               />
@@ -386,7 +385,6 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="Father Name" name="fatherName">
                               <Input
-                                placeholder="Enter father's name"
                                 defaultValue={
                                   selectedUser.userDetail.fatherName
                                 }
@@ -409,9 +407,8 @@ export const Employees: React.FC = () => {
                               ]}
                             >
                               <Input
-                                placeholder="Enter full name"
                                 defaultValue={
-                                  selectedUser.signInDetail.signInEmail
+                                  selectedUser.userDetail.email
                                 }
                                 readOnly
                               />
@@ -420,7 +417,6 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="Address" name="address">
                               <Input
-                                placeholder="Enter address"
                                 defaultValue={selectedUser.userDetail.address}
                                 readOnly
                               />
@@ -441,7 +437,6 @@ export const Employees: React.FC = () => {
                               ]}
                             >
                               <Input
-                                placeholder="Enter phone number"
                                 defaultValue={selectedUser.userDetail.phone}
                                 readOnly
                               />
@@ -450,7 +445,6 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="CNIC" name="cnic">
                               <Input
-                                placeholder="12345-1234567-1"
                                 defaultValue={selectedUser.userDetail.cnic}
                                 readOnly
                               />
@@ -495,7 +489,6 @@ export const Employees: React.FC = () => {
                               name="companyName"
                             >
                               <Input
-                                placeholder="Enter company name"
                                 defaultValue={
                                   selectedUser.jobDetail.companyName
                                 }
@@ -506,7 +499,6 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="Department" name="department">
                               <Input
-                                placeholder="Enter department"
                                 defaultValue={selectedUser.jobDetail.department}
                                 readOnly
                               />
@@ -515,10 +507,10 @@ export const Employees: React.FC = () => {
                         </Row>
                         <Row gutter={[16, 0]}>
                           <Col xs={24} sm={12}>
-                            <Form.Item label="Job Position" name="jobPosition">
+                            <Form.Item label="Job Position" name="jobType">
                               <Input
                                 defaultValue={
-                                  selectedUser.jobDetail.jobPosition
+                                  selectedUser.jobDetail.jobType
                                 }
                                 readOnly
                               />
@@ -527,7 +519,6 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="Manager" name="manager">
                               <Input
-                                placeholder="Enter manager name"
                                 defaultValue={selectedUser.jobDetail.manager}
                                 readOnly
                               />
@@ -563,7 +554,6 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="Salary" name="salary">
                               <Input
-                                placeholder="Enter Salary "
                                 defaultValue={selectedUser.jobDetail.salary}
                                 readOnly
                               />
@@ -656,7 +646,6 @@ export const Employees: React.FC = () => {
                           <Col xs={24} sm={12}>
                             <Form.Item label="User Name" name="userName">
                               <Input
-                                placeholder="Enter full name"
                                 defaultValue={
                                   selectedUser.signInDetail.userName
                                 }
@@ -668,7 +657,6 @@ export const Employees: React.FC = () => {
                             <Form.Item label="SignIn Email" name="signInEmail">
                               <Input
                                 type="email"
-                                placeholder="Enter SignIn Email"
                                 defaultValue={
                                   selectedUser.signInDetail.signInEmail
                                 }

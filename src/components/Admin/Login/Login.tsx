@@ -2,8 +2,6 @@ import { Typography } from "@mui/material";
 import { Button, Form, Input, Divider, message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { authLogin } from "../../../services/authLogin";
-import { fetchUserData } from "../../../services/userApis/userApis";
-import { LoadingOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import "./Login.css";
 

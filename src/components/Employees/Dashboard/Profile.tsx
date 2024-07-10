@@ -178,8 +178,8 @@ export const Profile = () => {
           />
           <div className="ml-10">
             <Title level={1}>
-              {userData?.signInDetail.userName 
-                ? userData?.signInDetail.userName
+              {userData?.userDetail.fullName 
+                ? userData?.userDetail.fullName
                 : ""}
             </Title>
             <Row className="w-full flex text-slate-400 font-semibold space-x-36">
@@ -254,7 +254,7 @@ export const Profile = () => {
                   {attendanceData?.filter((item) => item.status === "Present")
                     .length || 0}
                 </Title>
-                <span>Total Paresnt</span>
+                <span>Total Present</span>
               </div>
             </div>
           </Col>

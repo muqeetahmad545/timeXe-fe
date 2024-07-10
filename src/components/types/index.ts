@@ -13,7 +13,7 @@ export interface UserData {
   jobDetail: {
     companyName: string;
     department: string;
-    jobPosition: string;
+    jobType: string;
     manager: string;
     designation: string;
     joiningDate: Date;
@@ -63,7 +63,7 @@ export interface User {
   jobDetail: {
     companyName: string;
     department: string;
-    jobPosition: string;
+    jobType: string;
     manager: string;
     designation: string;
     joiningDate: Date;
